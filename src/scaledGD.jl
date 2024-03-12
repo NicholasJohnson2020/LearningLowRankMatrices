@@ -43,10 +43,12 @@ function scaledGD(A, k, Y, c_1, c_2, lambda; max_iteration=1000,
     eta = 2 / 3
     old_objective = 0
     new_objective = 0
+    iter_count = 0
 
     # Main loop
     for iteration=1:max_iteration
 
+        iter_count += 1
         new_objective, gradients = computeObjectiveGradient(U_iterate,
                                                             V_iterate, S,
                                                             A, Y, c_1, c_2,
@@ -67,6 +69,6 @@ function scaledGD(A, k, Y, c_1, c_2, lambda; max_iteration=1000,
         old_objective = new_objective
     end
 
-    return (U_iterate * V_iterate')
+    return (U_iterate * V_iterate'), new_objective, iter_count
 
 end
