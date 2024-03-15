@@ -42,15 +42,15 @@ function alternatingMinimization(A, k, Y, c_1, c_2, lambda; max_iteration=1000,
 
         iter_count += 1
         # Update U iterate
-        Uvec, fU, _, _, _ = optimize(fgU, reduce(vcat, U_iterate),
-                                     LBFGS(num_steps_hessian_estimate,
-                                           gradtol=grad_norm_termination));
+        Uvec, fU, _, _, _ = OptimKit.optimize(fgU, reduce(vcat, U_iterate),
+                                              LBFGS(num_steps_hessian_estimate,
+                                              gradtol=grad_norm_termination));
         U_iterate = reshape(Uvec, n, k)
 
         # Update V iterate
-        Vvec, fV, _, _, _ = optimize(fgV, reduce(vcat, V_iterate),
-                                     LBFGS(num_steps_hessian_estimate,
-                                           gradtol=grad_norm_termination));
+        Vvec, fV, _, _, _ = OptimKit.optimize(fgV, reduce(vcat, V_iterate),
+                                              LBFGS(num_steps_hessian_estimate,
+                                              gradtol=grad_norm_termination));
         V_iterate = reshape(Vvec, m, k)
 
         new_objective = fV
