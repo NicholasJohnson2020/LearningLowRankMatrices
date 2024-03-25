@@ -63,12 +63,12 @@ function perspectiveRelaxationDual(A, k, Y, c_1, c_2, lambda;
         @constraint(model, Lambda_12[i, j] == 0)
     end
 
-    for i=1:n, j=1:n
-        if i==j
-            continue
-        end
-        @constraint(model, Lambda_22[i, j] == 0)
-    end
+    #for i=1:n, j=1:n
+    #    if i==j
+    #        continue
+    #    end
+    #    @constraint(model, Lambda_22[i, j] == 0)
+    #end
     #@constraint(model, (lambda * Matrix(I, m, m) - Lambda_11) in PSDCone())
     @constraint(model, (Lambda_22 - sigma * Matrix(I, n, n) + c_2 * Y * Y') in PSDCone())
     @constraint(model, [lambda * Matrix(I, m, m) Lambda_12';
