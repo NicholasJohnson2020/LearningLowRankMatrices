@@ -13,4 +13,5 @@ include("src/scaledGD.jl")
 include("src/altMin.jl")
 include("src/perspectiveFormulations.jl")
 include("src/benchmarkMethods.jl")
+include("scripts/generateSyntheticData.jl")
 ;

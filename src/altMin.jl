@@ -1,4 +1,4 @@
-function alternatingMinimization(A, k, Y, c_1, c_2, lambda; max_iteration=1000,
+function alternatingMinimization(A, k, Y, lambda; max_iteration=1000,
                                  termination_criteria="rel_improvement",
                                  min_improvement=0.001)
     @assert termination_criteria in ["iteration_count", "rel_improvement"]
@@ -26,14 +26,14 @@ function alternatingMinimization(A, k, Y, c_1, c_2, lambda; max_iteration=1000,
     function fgU(x)
         U_mat = reshape(x, n, k)
         obj, gradients = computeObjectiveGradient(U_mat, V_iterate, S, A, Y,
-                                                  c_1, c_2, lambda)
+                                                  lambda)
         return obj, reduce(vcat, gradients[1])
     end
 
     function fgV(x)
         V_mat = reshape(x, m, k)
         obj, gradients = computeObjectiveGradient(U_iterate, V_mat, S, A, Y,
-                                                  c_1, c_2, lambda)
+                                                  lambda)
         return obj, reduce(vcat, gradients[2])
     end
 

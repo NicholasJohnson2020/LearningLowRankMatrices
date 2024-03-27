@@ -1,28 +1,28 @@
-function computeObjectiveGradient(U, V, S, A, Y, c_1, c_2, lambda)
+function computeObjectiveGradient(U, V, S, A, Y, lambda)
 
     X = U * V'
     (n, m) = size(X)
 
     temp_1 = S .* (X - A)
-    temp_2 = (X' * X) \ X'
 
-    G = c_1 * temp_1
-    G += c_2 * ((X * temp_2 - 1 * Matrix(I, n, n)) * Y * Y' * temp_2')
-    G += lambda * X
+    temp_2 = pinv(X' * X) * X'
+
+    G = temp_1
+    G += lambda *  ((X * temp_2 - 1 * Matrix(I, n, n)) * Y * Y' * temp_2')
 
     U_grad = G * V
     V_grad = G' * U
 
-    obj = c_1 * norm(temp_1) ^ 2
-    obj += c_2 * tr(Y' * (1 * Matrix(I, n, n) - X * temp_2) * Y)
-    obj += lambda * norm(X) ^ 2
+    obj = norm(temp_1) ^ 2
+    obj += lambda * tr(Y' * (1 * Matrix(I, n, n) - X * temp_2) * Y)
 
     return obj, (U_grad, V_grad)
 
 end
 
-function scaledGD(A, k, Y, c_1, c_2, lambda; max_iteration=1000,
-                  termination_criteria="rel_improvement", min_improvement=0.001)
+function scaledGD(A, k, Y, lambda; max_iteration=1000,
+                  termination_criteria="rel_improvement", min_improvement=0.001,
+                  step_size=2/3)
 
     @assert termination_criteria in ["iteration_count", "rel_improvement"]
 
@@ -39,8 +39,6 @@ function scaledGD(A, k, Y, c_1, c_2, lambda; max_iteration=1000,
     U_iterate = L * Diagonal(sqrt.(sigma))
     V_iterate = R * Diagonal(sqrt.(sigma))
 
-    # Default step size specified in the paper
-    eta = 2 / 3
     old_objective = 0
     new_objective = 0
     iter_count = 0
@@ -51,11 +49,10 @@ function scaledGD(A, k, Y, c_1, c_2, lambda; max_iteration=1000,
         iter_count += 1
         new_objective, gradients = computeObjectiveGradient(U_iterate,
                                                             V_iterate, S,
-                                                            A, Y, c_1, c_2,
-                                                            lambda)
+                                                            A, Y, lambda)
 
-        U_update = U_iterate - eta * gradients[1] * pinv(V_iterate' * V_iterate)
-        V_update = V_iterate - eta * gradients[2] * pinv(U_iterate' * U_iterate)
+        U_update = U_iterate - step_size * gradients[1] * pinv(V_iterate' * V_iterate)
+        V_update = V_iterate - step_size * gradients[2] * pinv(U_iterate' * U_iterate)
 
         # Update the U and V iterates
         U_iterate = U_update
