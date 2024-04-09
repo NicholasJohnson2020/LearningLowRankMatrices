@@ -1,4 +1,4 @@
-function computeObjectiveGradient(U, V, S, A, Y, lambda)
+function computeObjectiveGradient(U, V, S, A, Y, lambda, gamma)
 
     X = U * V'
     (n, m) = size(X)
@@ -10,17 +10,18 @@ function computeObjectiveGradient(U, V, S, A, Y, lambda)
     G = temp_1
     G += lambda *  ((X * temp_2 - 1 * Matrix(I, n, n)) * Y * Y' * temp_2')
 
-    U_grad = G * V
-    V_grad = G' * U
+    U_grad = G * V + 2 * gamma * U
+    V_grad = G' * U + 2 * gamma * V
 
     obj = norm(temp_1) ^ 2
-    obj += lambda * tr(Y' * (1 * Matrix(I, n, n) - X * temp_2) * Y)
+    obj += lambda * tr(Y' * (Matrix(I, n, n) - X * temp_2) * Y)
+    obj += gamma * (norm(U)^2 + norm(V)^2)
 
     return obj, (U_grad, V_grad)
 
 end
 
-function scaledGD(A, k, Y, lambda; max_iteration=1000,
+function scaledGD(A, k, Y, lambda; gamma=0.01, max_iteration=1000,
                   termination_criteria="rel_improvement", min_improvement=0.001,
                   step_size=2/3)
 
@@ -49,7 +50,7 @@ function scaledGD(A, k, Y, lambda; max_iteration=1000,
         iter_count += 1
         new_objective, gradients = computeObjectiveGradient(U_iterate,
                                                             V_iterate, S,
-                                                            A, Y, lambda)
+                                                            A, Y, lambda, gamma)
 
         U_update = U_iterate - step_size * gradients[1] * pinv(V_iterate' * V_iterate)
         V_update = V_iterate - step_size * gradients[2] * pinv(U_iterate' * U_iterate)

@@ -1,4 +1,4 @@
-function alternatingMinimization(A, k, Y, lambda; max_iteration=1000,
+function alternatingMinimization(A, k, Y, lambda; gamma=0.01, max_iteration=1000,
                                  termination_criteria="rel_improvement",
                                  min_improvement=0.001)
     @assert termination_criteria in ["iteration_count", "rel_improvement"]
@@ -17,8 +17,8 @@ function alternatingMinimization(A, k, Y, lambda; max_iteration=1000,
     V_iterate = R * Diagonal(sqrt.(sigma))
 
     # Set LBFGS parameters
-    num_steps_hessian_estimate = 3
-    grad_norm_termination = 1e-4
+    num_steps_hessian_estimate = 2
+    grad_norm_termination = 1e-3
     old_objective = 0
     new_objective = 0
     iter_count = 0
@@ -26,14 +26,14 @@ function alternatingMinimization(A, k, Y, lambda; max_iteration=1000,
     function fgU(x)
         U_mat = reshape(x, n, k)
         obj, gradients = computeObjectiveGradient(U_mat, V_iterate, S, A, Y,
-                                                  lambda)
+                                                  lambda, gamma)
         return obj, reduce(vcat, gradients[1])
     end
 
     function fgV(x)
         V_mat = reshape(x, m, k)
         obj, gradients = computeObjectiveGradient(U_iterate, V_mat, S, A, Y,
-                                                  lambda)
+                                                  lambda, gamma)
         return obj, reduce(vcat, gradients[2])
     end
 

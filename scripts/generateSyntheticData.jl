@@ -5,7 +5,7 @@ function sample_data(m, n, r, d, missing_frac, noise_variance)
 
     U = rand(unif, (n, r))
     V = rand(unif, (m, r))
-    beta = rand(unif, (m, d))
+    beta = 10 * rand(unif, (m, d))
     N = rand(gaus, (n, d))
 
     A_true = U * V'
