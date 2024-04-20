@@ -1,21 +1,29 @@
-function computeObjectiveGradient(U, V, S, A, Y, lambda, gamma)
+function computeObjectiveGradient(U, V, S, A, Y, lambda, gamma;
+                                  singular_value_threshold=1e-4)
 
     X = U * V'
     (n, m) = size(X)
+    k = size(U)[2]
 
+    B, Sigma, C = tsvd(X, k)
+    for i=1:k
+        if Sigma[i] > singular_value_threshold
+            Sigma[i] = 1 / Sigma[i]
+        else
+            Sigma[i] = 0
+        end
+    end
     temp_1 = S .* (X - A)
 
-    temp_2 = pinv(X' * X) * X'
-
     G = temp_1
-    G += lambda *  ((X * temp_2 - 1 * Matrix(I, n, n)) * Y * Y' * temp_2')
+    G += lambda *  ((B * B' - 1 * Matrix(I, n, n)) * Y * Y' * B * Diagonal(Sigma) * C')
 
     U_grad = G * V + 2 * gamma * U
     V_grad = G' * U + 2 * gamma * V
 
     obj = norm(temp_1) ^ 2
-    obj += lambda * tr(Y' * (Matrix(I, n, n) - X * temp_2) * Y)
-    obj += gamma * (norm(U)^2 + norm(V)^2)
+    obj += lambda * tr(Y' * (Matrix(I, n, n) - B * B') * Y)
+    obj += gamma * (norm(U) ^ 2 + norm(V) ^ 2)
 
     return obj, (U_grad, V_grad)
 
