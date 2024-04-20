@@ -25,3 +25,22 @@ function sample_data(m, n, r, d, missing_frac, noise_variance)
     return A_true, A_observed, Y, r
 
 end
+
+function evaluatePerformance(X_fitted, A_observed, A_true, Y, k, lambda, gamma;
+                             singular_value_threshold=1e-4)
+
+    (n, m) = size(A_observed)
+    S = zeros(n, m)
+    for (i, j, value) in zip(findnz(A_observed)...)
+        S[i, j] = 1
+    end
+    S = sparse(S)
+
+    U, _, _ = tsvd(X_fitted, k)
+    obj = norm(S .* (X_fitted - A_observed))^2
+    obj += lambda * tr(Y' * (Matrix(I, n, n) - U * U') * Y)
+    obj += 2 * gamma * sum(abs.(svd(X_fitted).S))
+
+    MSE = norm(X_fitted - A_true)
+    return obj, MSE
+end

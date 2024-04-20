@@ -17,5 +17,5 @@ include("src/admm.jl")
 include("src/admmV2.jl")
 include("src/perspectiveFormulations.jl")
 include("src/benchmarkMethods.jl")
-include("scripts/generateSyntheticData.jl")
+include("src/utils.jl")
 ;
