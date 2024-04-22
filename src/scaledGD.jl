@@ -78,3 +78,50 @@ function scaledGD(A, k, Y, lambda; gamma=0.01, max_iteration=1000,
     return (U_iterate * V_iterate'), new_objective, iter_count
 
 end
+
+function vanillaGD(A, k, Y, lambda; gamma=0.01, max_iteration=1000,
+                  termination_criteria="rel_improvement", min_improvement=0.001,
+                  step_size=2/3)
+
+    @assert termination_criteria in ["iteration_count", "rel_improvement"]
+
+    (n, m) = size(A)
+
+    S = zeros(n, m)
+    for (i, j, value) in zip(findnz(A)...)
+        S[i, j] = 1
+    end
+    S = sparse(S)
+
+    L, sigma, R = tsvd(A, k)
+
+    U_iterate = L * Diagonal(sqrt.(sigma))
+    V_iterate = R * Diagonal(sqrt.(sigma))
+
+    old_objective = 0
+    new_objective = 0
+    iter_count = 0
+
+    # Main loop
+    for iteration=1:max_iteration
+
+        iter_count += 1
+        new_objective, gradients = computeObjectiveGradient(U_iterate,
+                                                            V_iterate, S,
+                                                            A, Y, lambda, gamma)
+
+        # Update the U and V iterates
+        U_iterate = U_iterate - step_size * gradients[1]
+        V_iterate = V_iterate - step_size * gradients[2]
+
+        if (termination_criteria == "rel_improvement") & (old_objective != 0)
+            if (old_objective - new_objective) / old_objective < min_improvement
+                break
+            end
+        end
+        old_objective = new_objective
+    end
+
+    return (U_iterate * V_iterate'), new_objective, iter_count
+
+end
