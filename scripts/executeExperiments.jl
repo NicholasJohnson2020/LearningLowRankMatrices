@@ -172,7 +172,7 @@ for task_ID in task_ID_list
                           residual_threshold=1e-4)
             trial_end_time = now()
             X_fitted = output[1] * output[2]'
-            append!(experiment_results["updates_times"], [output[7][3]])
+            append!(experiment_results["update_times"], [output[7][3]])
             append!(experiment_results["step_size"], step_size)
         elseif method_name == "admmMap"
             step_size = 10
@@ -187,7 +187,7 @@ for task_ID in task_ID_list
                              residual_threshold=1e-4)
             trial_end_time = now()
             X_fitted = output[1] * output[2]'
-            append!(experiment_results["updates_times"], [output[7][3]])
+            append!(experiment_results["update_times"], [output[7][3]])
             append!(experiment_results["step_size"], step_size)
         elseif method_name == "fastImpute"
             trial_start = now()
@@ -211,7 +211,7 @@ for task_ID in task_ID_list
         objective, MSE = evaluatePerformance(X_fitted, A_observed, A_true, Y,
                                              k_target, lambda, gamma)
         reconstruction_error = MSE ^ 2 / norm(A_true) ^ 2
-        fitted_rank = rank(matrixF_X)
+        fitted_rank = rank(X_fitted)
         elapsed_time = Dates.value(trial_end_time - trial_start)
 
         # Store the performance measures of the returned solution
