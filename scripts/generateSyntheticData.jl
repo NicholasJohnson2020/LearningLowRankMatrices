@@ -49,7 +49,7 @@ for n in N, m in M, k in K, d in D, frac in missing_frac, noise in noise_varianc
 
 end
 
-elpased_time = now() = start
+elpased_time = now() - start
 
 f = open(file_path * "data.json","w")
 JSON.print(f, JSON.json(data_dict))
