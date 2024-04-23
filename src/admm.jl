@@ -1,6 +1,7 @@
-function admmMap(A, k, Y, lambda; gamma=0.01, rho_1=10, rho_2=10,
-              residual_threshold=0.01, max_iteration=100)
+function admmMap(A, k, Y, lambda; gamma=0.01, step_size=10,
+                 residual_threshold=0.01, max_iteration=100)
 
+    """
     function computeAugL()
 
         U = U_iterate
@@ -20,6 +21,10 @@ function admmMap(A, k, Y, lambda; gamma=0.01, rho_1=10, rho_2=10,
 
         return obj
     end
+    """
+
+    rho_1 = step_size
+    rho_2 = step_size
 
     (n, m) = size(A)
     d = size(Y)[2]
@@ -41,11 +46,12 @@ function admmMap(A, k, Y, lambda; gamma=0.01, rho_1=10, rho_2=10,
 
     Phi_residual_hist = []
     Psi_residual_hist = []
-    augL_hist = [computeAugL()]
+    #augL_hist = [computeAugL()]
 
     cache_Y = lambda * Y * Y'
 
-    update_time = Dict("U_map" => 0, "U_reduce" => 0, "P" => 0, "V_map" => 0, "V_reduce" => 0, "Z" => 0)
+    update_time = Dict("U_map" => 0, "U_reduce" => 0, "P" => 0,
+                       "V_map" => 0, "V_reduce" => 0, "Z" => 0)
 
     updateU = function(i)
         inv_mat = 2 * V_iterate' * Diagonal(S[i, :]) * V_iterate
@@ -76,7 +82,7 @@ function admmMap(A, k, Y, lambda; gamma=0.01, rho_1=10, rho_2=10,
         close = now()
         update_time["U_reduce"] += Dates.value(close - start)
 
-        append!(augL_hist, computeAugL())
+        #append!(augL_hist, computeAugL())
 
         # Perform P Update
         start = now()
@@ -88,7 +94,7 @@ function admmMap(A, k, Y, lambda; gamma=0.01, rho_1=10, rho_2=10,
         close = now()
         update_time["P"] += Dates.value(close - start)
 
-        append!(augL_hist, computeAugL())
+        #append!(augL_hist, computeAugL())
 
         # Perform V Update
         start = now()
@@ -102,7 +108,7 @@ function admmMap(A, k, Y, lambda; gamma=0.01, rho_1=10, rho_2=10,
         close = now()
         update_time["V_reduce"] += Dates.value(close - start)
 
-        append!(augL_hist, computeAugL())
+        #append!(augL_hist, computeAugL())
 
         # Perform Z Update
         start = now()
@@ -113,19 +119,19 @@ function admmMap(A, k, Y, lambda; gamma=0.01, rho_1=10, rho_2=10,
         close = now()
         update_time["Z"] += Dates.value(close - start)
 
-        append!(augL_hist, computeAugL())
+        #append!(augL_hist, computeAugL())
 
         # Perform Sigma1 Update
         Phi_residual = (Matrix(I, n, n) - P_iterate) * Z_iterate
         Phi_iterate += rho_1 * Phi_residual
 
-        append!(augL_hist, computeAugL())
+        #append!(augL_hist, computeAugL())
 
         # Perform Sigma2 Update
         Psi_residual = Z_iterate - U_iterate
         Psi_iterate += rho_2 * Psi_residual
 
-        append!(augL_hist, computeAugL())
+        #append!(augL_hist, computeAugL())
         append!(Phi_residual_hist, norm(Phi_residual)^2)
         append!(Psi_residual_hist, norm(Psi_residual)^2)
 
@@ -137,13 +143,17 @@ function admmMap(A, k, Y, lambda; gamma=0.01, rho_1=10, rho_2=10,
     end
 
     return U_iterate, V_iterate, P_iterate, Z_iterate, Phi_iterate,
-           Psi_iterate, (Phi_residual_hist, Psi_residual_hist, augL_hist, update_time)
+           Psi_iterate, (Phi_residual_hist,
+                         Psi_residual_hist,
+                         #augL_hist,
+                         update_time)
 
 end
 
-function admm(A, k, Y, lambda; gamma=0.01, rho_1=10, rho_2=10,
+function admm(A, k, Y, lambda; gamma=0.01, step_size=10,
               residual_threshold=0.01, max_iteration=100)
 
+    """
     function computeAugL()
 
         U = U_iterate
@@ -163,6 +173,10 @@ function admm(A, k, Y, lambda; gamma=0.01, rho_1=10, rho_2=10,
 
         return obj
     end
+    """
+
+    rho_1 = step_size
+    rho_2 = step_size
 
     (n, m) = size(A)
     d = size(Y)[2]
@@ -184,7 +198,7 @@ function admm(A, k, Y, lambda; gamma=0.01, rho_1=10, rho_2=10,
 
     Phi_residual_hist = []
     Psi_residual_hist = []
-    augL_hist = [computeAugL()]
+    #augL_hist = [computeAugL()]
 
     cache_Y = lambda * Y * Y'
 
@@ -204,7 +218,7 @@ function admm(A, k, Y, lambda; gamma=0.01, rho_1=10, rho_2=10,
         close = now()
         update_time["U"] += Dates.value(close - start)
 
-        append!(augL_hist, computeAugL())
+        #append!(augL_hist, computeAugL())
 
         # Perform P Update
         start = now()
@@ -216,7 +230,7 @@ function admm(A, k, Y, lambda; gamma=0.01, rho_1=10, rho_2=10,
         close = now()
         update_time["P"] += Dates.value(close - start)
 
-        append!(augL_hist, computeAugL())
+        #append!(augL_hist, computeAugL())
 
         # Perform V Update
         start = now()
@@ -229,7 +243,7 @@ function admm(A, k, Y, lambda; gamma=0.01, rho_1=10, rho_2=10,
         close = now()
         update_time["V"] += Dates.value(close - start)
 
-        append!(augL_hist, computeAugL())
+        #append!(augL_hist, computeAugL())
 
         # Perform Z Update
         start = now()
@@ -240,19 +254,19 @@ function admm(A, k, Y, lambda; gamma=0.01, rho_1=10, rho_2=10,
         close = now()
         update_time["Z"] += Dates.value(close - start)
 
-        append!(augL_hist, computeAugL())
+        #append!(augL_hist, computeAugL())
 
         # Perform Sigma1 Update
         Phi_residual = (Matrix(I, n, n) - P_iterate) * Z_iterate
         Phi_iterate += rho_1 * Phi_residual
 
-        append!(augL_hist, computeAugL())
+        #append!(augL_hist, computeAugL())
 
         # Perform Sigma2 Update
         Psi_residual = Z_iterate - U_iterate
         Psi_iterate += rho_2 * Psi_residual
 
-        append!(augL_hist, computeAugL())
+        #append!(augL_hist, computeAugL())
         append!(Phi_residual_hist, norm(Phi_residual)^2)
         append!(Psi_residual_hist, norm(Psi_residual)^2)
 
@@ -264,7 +278,10 @@ function admm(A, k, Y, lambda; gamma=0.01, rho_1=10, rho_2=10,
     end
 
     return U_iterate, V_iterate, P_iterate, Z_iterate, Phi_iterate,
-           Psi_iterate, (Phi_residual_hist, Psi_residual_hist, augL_hist, update_time)
+           Psi_iterate, (Phi_residual_hist,
+                         Psi_residual_hist,
+                         #augL_hist,
+                         update_time)
 
 end
 
