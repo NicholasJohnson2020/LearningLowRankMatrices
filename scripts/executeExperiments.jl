@@ -113,7 +113,7 @@ for task_ID in task_ID_list
 
         println("Starting trial " * string(trial_num) * " of " * string(NUM_TRIALS))
 
-        A_true = experiment_data[string(trial_num)]["X"]
+        A_true = experiment_data[string(trial_num)]["A_true"]
         A_true = unserialize_matrix(A_true)
         A_observed = experiment_data[string(trial_num)]["A_observed"]
         A_observed = unserialize_matrix(A_observed)
