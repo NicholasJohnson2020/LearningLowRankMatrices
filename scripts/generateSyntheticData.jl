@@ -28,6 +28,7 @@ data_dict["d"] = D
 data_dict["missing"] = missing_frac
 data_dict["noise"] = noise_variance
 
+start = now()
 # Main loop to sample data
 for n in N, m in M, k in K, d in D, frac in missing_frac, noise in noise_variance
 
@@ -48,6 +49,8 @@ for n in N, m in M, k in K, d in D, frac in missing_frac, noise in noise_varianc
 
 end
 
+elpased_time = now() = start
+
 f = open(file_path * "data.json","w")
 JSON.print(f, JSON.json(data_dict))
 close(f)
@@ -57,3 +60,5 @@ JSON.print(f, JSON.json(param_dict))
 close(f)
 
 println("The total number of configs is $config_count.")
+
+println("Execution time is $elapsed_time")
