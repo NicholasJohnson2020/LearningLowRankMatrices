@@ -116,7 +116,7 @@ for task_ID in task_ID_list
         A_true = experiment_data[string(trial_num)]["A_true"]
         A_true = unserialize_matrix(A_true)
         A_observed = experiment_data[string(trial_num)]["A_observed"]
-        A_observed = unserialize_matrix(A_observed)
+        A_observed = sparse(unserialize_matrix(A_observed))
         Y = experiment_data[string(trial_num)]["Y"]
         Y = unserialize_matrix(Y)
 
