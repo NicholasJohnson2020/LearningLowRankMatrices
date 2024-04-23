@@ -31,7 +31,7 @@ end
 
 function scaledGD(A, k, Y, lambda; gamma=0.01, max_iteration=1000,
                   termination_criteria="rel_improvement", min_improvement=0.001,
-                  step_size=2/3)
+                  step_size=1)
 
     @assert termination_criteria in ["iteration_count", "rel_improvement"]
 
@@ -44,6 +44,7 @@ function scaledGD(A, k, Y, lambda; gamma=0.01, max_iteration=1000,
     S = sparse(S)
 
     L, sigma, R = tsvd(A, k)
+    step_normalization = sigma[1]
 
     U_iterate = L * Diagonal(sqrt.(sigma))
     V_iterate = R * Diagonal(sqrt.(sigma))
@@ -60,8 +61,8 @@ function scaledGD(A, k, Y, lambda; gamma=0.01, max_iteration=1000,
                                                             V_iterate, S,
                                                             A, Y, lambda, gamma)
 
-        U_update = U_iterate - step_size * gradients[1] * pinv(V_iterate' * V_iterate)
-        V_update = V_iterate - step_size * gradients[2] * pinv(U_iterate' * U_iterate)
+        U_update = U_iterate - step_size / step_normalization * gradients[1] * pinv(V_iterate' * V_iterate)
+        V_update = V_iterate - step_size / step_normalization * gradients[2] * pinv(U_iterate' * U_iterate)
 
         # Update the U and V iterates
         U_iterate = U_update
@@ -81,7 +82,7 @@ end
 
 function vanillaGD(A, k, Y, lambda; gamma=0.01, max_iteration=1000,
                   termination_criteria="rel_improvement", min_improvement=0.001,
-                  step_size=2/3)
+                  step_size=1)
 
     @assert termination_criteria in ["iteration_count", "rel_improvement"]
 
@@ -94,6 +95,7 @@ function vanillaGD(A, k, Y, lambda; gamma=0.01, max_iteration=1000,
     S = sparse(S)
 
     L, sigma, R = tsvd(A, k)
+    step_normalization = sigma[1]
 
     U_iterate = L * Diagonal(sqrt.(sigma))
     V_iterate = R * Diagonal(sqrt.(sigma))
@@ -111,8 +113,8 @@ function vanillaGD(A, k, Y, lambda; gamma=0.01, max_iteration=1000,
                                                             A, Y, lambda, gamma)
 
         # Update the U and V iterates
-        U_iterate = U_iterate - step_size * gradients[1]
-        V_iterate = V_iterate - step_size * gradients[2]
+        U_iterate = U_iterate - step_size / step_normalization * gradients[1]
+        V_iterate = V_iterate - step_size / step_normalization * gradients[2]
 
         if (termination_criteria == "rel_improvement") & (old_objective != 0)
             if (old_objective - new_objective) / old_objective < min_improvement
