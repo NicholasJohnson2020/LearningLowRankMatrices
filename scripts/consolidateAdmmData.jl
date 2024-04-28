@@ -21,7 +21,7 @@ function processData(input_path, method_name)
    # Iterate over all files in the input directory
    for file_name in file_paths
 
-      if file_name[end-3:end] != ".json"
+      if file_name[end-4:end] != ".json"
          continue
       end
 
