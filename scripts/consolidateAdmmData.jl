@@ -10,8 +10,27 @@ function processData(input_path, method_name)
                    gamma=Float64[], lambda=Float64[],
                    Z_exec_time=Float64[], Z_exec_time_std=Float64[],
                    U_exec_time=Float64[], U_exec_time_std=Float64[],
+                   U_map_exec_time=Float64[], U_map_exec_time_std=Float64[],
+                   U_reduce_exec_time=Float64[], U_reduce_exec_time_std=Float64[],
                    P_exec_time=Float64[], P_exec_time_std=Float64[],
-                   V_exec_time=Float64[], V_exec_time_std=Float64[])
+                   V_exec_time=Float64[], V_exec_time_std=Float64[],
+                   V_map_exec_time=Float64[], V_map_exec_time_std=Float64[],
+                   V_reduce_exec_time=Float64[], V_reduce_exec_time_std=Float64[])
+
+
+   if method_name == "admm"
+       select!(df, Not([:U_map_exec_time, :U_map_exec_time_std,
+               :U_reduce_exec_time, :U_reduce_exec_time_std,
+               :V_map_exec_time, :V_map_exec_time_std, :V_reduce_exec_time,
+               :V_reduce_exec_time_std]))
+   else
+      select!(df, Not([:U_exec_time, :U_exec_time_std, :V_exec_time,
+                       :V_exec_time_std]))
+   end
+
+   keySet = Dict("admm" => ["Z", "U", "P", "V"],
+                 "admmMap" => ["Z", "U_map", "U_reduce",
+                               "P", "V_map", "V_reduce"])
 
    successful_entries = 0
 
@@ -52,7 +71,7 @@ function processData(input_path, method_name)
                      exp_data["gamma"][1],
                      exp_data["lambda"][1]]
 
-      for key in ["Z", "U", "P", "V"]
+      for key in keySet[method_name]
             update_data = [raw_data[key] for raw_data in exp_data["update_times"]]
             append!(current_row, Statistics.mean(update_data))
             append!(current_row, Statistics.std(update_data) / (num_samples^0.5))
