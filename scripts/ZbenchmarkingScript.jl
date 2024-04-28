@@ -42,7 +42,7 @@ for n in N
         close = now()
 
         elapsed_time = Dates.value(close - start)
-        append!(data["existing"][n], elapsed_time)
+        append!(data_dict["existing"][n], elapsed_time)
 
         # Simplified implementation
         start = now()
@@ -51,7 +51,7 @@ for n in N
         close = now()
 
         elapsed_time = Dates.value(close - start)
-        append!(data["simplified"][n], elapsed_time)
+        append!(data_dict["simplified"][n], elapsed_time)
 
         # Factored implementation
         start = now()
@@ -62,7 +62,7 @@ for n in N
         close = now()
 
         elapsed_time = Dates.value(close - start)
-        append!(data["factored"][n], elapsed_time)
+        append!(data_dict["factored"][n], elapsed_time)
 
     end
 end
@@ -73,8 +73,8 @@ for method in method_list
 
     for n in N
         current_row = [n,
-                       Statistics.mean(data[method][n]),
-                       Statistics.std(data[method][n]) / (num_trials^0.5)]
+                       Statistics.mean(data_dict[method][n]),
+                       Statistics.std(data_dict[method][n]) / (num_trials^0.5)]
 
         push!(df, current_row)
     end
