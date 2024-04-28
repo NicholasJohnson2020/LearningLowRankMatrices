@@ -10,7 +10,7 @@ M = 100
 #K = [5, 10, 15, 20, 25, 30, 35, 40]
 K = 5
 
-num_trials = 100
+num_trials = 500
 
 unif = Uniform(0, 1)
 
@@ -79,6 +79,6 @@ for method in method_list
         push!(df, current_row)
     end
 
-    CSV.write(output_root * "_" * method * ".csv", df)
+    CSV.write(output_root * "_" * method * "v2.csv", df)
 
 end
