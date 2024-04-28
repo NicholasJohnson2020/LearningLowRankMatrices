@@ -32,15 +32,13 @@ for n in N
         U = rand(unif, (n, K))
         Psi = rand(unif, (n, K))
         Phi = rand(unif, (n, K))
-        M = rand(unif, (n, K))
-        P = M * M'
+        L = rand(unif, (n, K))
+        P = L * L'
 
         # Existing implementation
         start = now()
-        temp = rho_2 * U_iterate - Psi_iterate
-        temp -= (Matrix(I, n, n) - P_iterate) * Phi_iterate
-        Z_iterate = (Matrix(I, n, n) + (rho_1 / rho_2) * P_iterate) * temp
-        Z_iterate = Z_iterate / (rho_1 + rho_2)
+        temp = rho_2 * U - Psi - (Matrix(I, n, n) - P) * Phi
+        Z_iterate = ((Matrix(I, n, n) + (rho_1 / rho_2) * P) * temp) / (rho_1 + rho_2)
         close = now()
 
         elapsed_time = Dates.value(close - start)
@@ -58,8 +56,8 @@ for n in N
         # Factored implementation
         start = now()
         temp = Phi + rho_1 * U - (rho_1 / rho_2) * Psi
-        temp = M' * temp
-        temp = M * temp
+        temp = L' * temp
+        temp = L * temp
         Z_iterate = (rho_2 * U - Psi - Phi + temp) / (rho_1 + rho_2)
         close = now()
 
