@@ -10,7 +10,7 @@ M = 100
 #K = [5, 10, 15, 20, 25, 30, 35, 40]
 K = 5
 
-num_trials = 1000
+num_trials = 100
 
 unif = Uniform(0, 1)
 
