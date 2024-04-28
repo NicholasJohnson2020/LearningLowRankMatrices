@@ -1,4 +1,4 @@
-using Random, Distributions, Dates, Statistics, DataFrames, CSV
+using Random, Distributions, Dates, Statistics, DataFrames, CSV, LinearAlgebra
 
 rho_1 = 10
 rho_2 = 10
