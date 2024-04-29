@@ -79,6 +79,6 @@ for method in method_list
         push!(df, current_row)
     end
 
-    CSV.write(output_root * "_" * method * "v2.csv", df)
+    CSV.write(output_root * "_" * method * ".csv", df)
 
 end
