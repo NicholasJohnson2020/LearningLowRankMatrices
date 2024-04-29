@@ -5,7 +5,7 @@ include("../lowRankMatrixLearning.jl")
 
 #N = [100, 200, 400, 800, 1000, 2000, 5000]
 N = 1000
-M = [100, 200, 400, 800, 1000, 2000, 4000]
+M = [100, 200, 400, 800, 1000, 2000]
 #M = 100
 #K = [5, 10, 15, 20, 25, 30, 35, 40]
 K = 5
@@ -105,6 +105,6 @@ for method in method_list
         push!(df, current_row)
     end
 
-    CSV.write(output_root * "_" * method * ".csv", df)
+    CSV.write(output_root * "_" * method * "v2.csv", df)
 
 end
