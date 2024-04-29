@@ -16,7 +16,7 @@ noise_variance = 2
 
 gamma = 1 / 10
 
-num_trials = 500
+num_trials = 100
 
 unif = Uniform(0, 1)
 
@@ -105,6 +105,6 @@ for method in method_list
         push!(df, current_row)
     end
 
-    CSV.write(output_root * "_" * method * ".csv", df)
+    CSV.write(output_root * "_" * method * "v2.csv", df)
 
 end
