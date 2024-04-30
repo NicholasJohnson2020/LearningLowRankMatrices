@@ -1,5 +1,5 @@
 using Random, Distributions, Dates, Statistics, DataFrames, CSV, LinearAlgebra
-using RandomizedLingAlg, LowRankApprox
+using RandomizedLinAlg, LowRankApprox
 
 include("../lowRankMatrixLearning.jl")
 
