@@ -146,12 +146,12 @@ for method in method_list
 
     for n in N
         current_row = [n,
-                       Statistics.mean(data_dict[method][m]["time"]),
-                       Statistics.std(data_dict[method][m]["time"]) / (num_trials^0.5),
-                       Statistics.mean(data_dict[method][m]["optimality_loss"]),
-                       Statistics.std(data_dict[method][m]["optimality_loss"]) / (num_trials^0.5),
-                       Statistics.mean(data_dict[method][m]["error_loss"]),
-                       Statistics.std(data_dict[method][m]["error_loss"]) / (num_trials^0.5)]
+                       Statistics.mean(data_dict[method][n]["time"]),
+                       Statistics.std(data_dict[method][n]["time"]) / (num_trials^0.5),
+                       Statistics.mean(data_dict[method][n]["optimality_loss"]),
+                       Statistics.std(data_dict[method][n]["optimality_loss"]) / (num_trials^0.5),
+                       Statistics.mean(data_dict[method][n]["error_loss"]),
+                       Statistics.std(data_dict[method][n]["error_loss"]) / (num_trials^0.5)]
 
         push!(df, current_row)
     end
