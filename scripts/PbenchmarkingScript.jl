@@ -29,6 +29,7 @@ data_dict = Dict()
 for method in method_list
     data_dict[method] = Dict()
     for n in N
+        data_dict[method][n] = Dict()
         data_dict[method][n]["time"] = []
         data_dict[method][n]["optimality_loss"] = []
         data_dict[method][n]["error_loss"] = []
