@@ -28,10 +28,10 @@ method_list = ["tsvd", "rsvd", "rsvd_fnkz", "pqr_randn", "svd_randn", "eig_randn
 data_dict = Dict()
 for method in method_list
     data_dict[method] = Dict()
-    for m in M
-        data_dict[method][m]["time"] = []
-        data_dict[method][m]["optimality_loss"] = []
-        data_dict[method][m]["error_loss"] = []
+    for n in M
+        data_dict[method][n]["time"] = []
+        data_dict[method][n]["optimality_loss"] = []
+        data_dict[method][n]["error_loss"] = []
     end
 end
 
