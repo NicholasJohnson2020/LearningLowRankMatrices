@@ -22,7 +22,8 @@ num_trials = 100
 unif = Uniform(0, 1)
 
 output_root = "P_update"
-method_list = ["tsvd", "rsvd", "rsvd_fnkz"]
+method_list = ["tsvd", "rsvd", "rsvd_fnkz", "pqr_randn", "svd_randn", "eig_randn",
+               "pqr_sub", "svd_sub", "eig_sub"]
 
 data_dict = Dict()
 for method in method_list
@@ -87,6 +88,52 @@ for n in N
         append!(data_dict["rsvd_fnkz"][n]["optimality_loss"], (opt_val - this_val) / opt_val)
         append!(data_dict["rsvd_fnkz"][n]["error_loss"], norm(opt_sol - this_sol)^2 / norm(opt_sol)^2)
 
+
+        sketch_types = [:randn, :sub]
+
+        for sketch_type in sketch_types
+            opts = LRAOptions()
+            opts.sketch = sketch_type
+
+            # For pqrfact gaussian sketch implementation
+            start = now()
+            L, _, _ = pqrfact(temp, rank=K, opts)
+            close = now()
+            elapsed_time = Dates.value(close - start)
+
+            this_val = L' * temp
+            this_val = tr(L * this_val)
+            this_sol = L * L'
+            append!(data_dict["pqr_" * string(sketch_type)][n]["time"], elapsed_time)
+            append!(data_dict["pqr_" * string(sketch_type)][n]["optimality_loss"], (opt_val - this_val) / opt_val)
+            append!(data_dict["pqr_" * string(sketch_type)][n]["error_loss"], norm(opt_sol - this_sol)^2 / norm(opt_sol)^2)
+
+            # For svd gaussian sketch implementation
+            start = now()
+            L, _, _ = psvd(temp, rank=K, opts)
+            close = now()
+            elapsed_time = Dates.value(close - start)
+
+            this_val = L' * temp
+            this_val = tr(L * this_val)
+            this_sol = L * L'
+            append!(data_dict["svd_" * string(sketch_type)][n]["time"], elapsed_time)
+            append!(data_dict["svd_" * string(sketch_type)][n]["optimality_loss"], (opt_val - this_val) / opt_val)
+            append!(data_dict["svd_" * string(sketch_type)][n]["error_loss"], norm(opt_sol - this_sol)^2 / norm(opt_sol)^2)
+
+            # For eig gaussian sketch implementation
+            start = now()
+            _, L = psvd(temp, rank=K, opts)
+            close = now()
+            elapsed_time = Dates.value(close - start)
+
+            this_val = L' * temp
+            this_val = tr(L * this_val)
+            this_sol = L * L'
+            append!(data_dict["eig_" * string(sketch_type)][n]["time"], elapsed_time)
+            append!(data_dict["eig_" * string(sketch_type)][n]["optimality_loss"], (opt_val - this_val) / opt_val)
+            append!(data_dict["eig_" * string(sketch_type)][n]["error_loss"], norm(opt_sol - this_sol)^2 / norm(opt_sol)^2)
+        end
     end
 end
 
