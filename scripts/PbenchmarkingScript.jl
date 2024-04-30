@@ -98,7 +98,7 @@ for n in N
 
             # For pqrfact gaussian sketch implementation
             start = now()
-            L, _, _ = pqrfact(temp, rank=K, opts)
+            L, _, _ = pqr(temp, rank=K, opts)
             close = now()
             elapsed_time = Dates.value(close - start)
 
@@ -124,7 +124,7 @@ for n in N
 
             # For eig gaussian sketch implementation
             start = now()
-            _, L = psvd(temp, rank=K, opts)
+            _, L = pheig(temp, rank=K, opts)
             close = now()
             elapsed_time = Dates.value(close - start)
 
