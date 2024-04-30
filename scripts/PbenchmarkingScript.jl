@@ -43,7 +43,7 @@ for n in N
         # Generate the data
         Y = rand(unif, (n, d))
         Z = rand(unif, (n, K))
-        Phi = rand((unif, (n, K)))
+        Phi = rand(unif, (n, K))
 
         temp = Phi * Z' / 2
         temp += temp'
