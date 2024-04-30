@@ -17,7 +17,7 @@ lambda = 1 / 100
 rho_1 = 10
 rho_2 = 10
 
-num_trials = 100
+num_trials = 10
 
 unif = Uniform(0, 1)
 
@@ -28,7 +28,7 @@ method_list = ["tsvd", "rsvd", "rsvd_fnkz", "pqr_randn", "svd_randn", "eig_randn
 data_dict = Dict()
 for method in method_list
     data_dict[method] = Dict()
-    for n in M
+    for n in N
         data_dict[method][n]["time"] = []
         data_dict[method][n]["optimality_loss"] = []
         data_dict[method][n]["error_loss"] = []
