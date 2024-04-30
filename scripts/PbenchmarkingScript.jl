@@ -3,7 +3,7 @@ using RandomizedLinAlg, LowRankApprox
 
 include("../lowRankMatrixLearning.jl")
 
-N = [100, 200, 400, 800, 1000, 2000, 5000]
+N = [100, 200, 400, 800, 1000, 2000, 5000, 10000]
 #N = 1000
 #M = [100, 200, 400, 800, 1000, 2000]
 M = 100
@@ -17,7 +17,7 @@ lambda = 1 / 100
 rho_1 = 10
 rho_2 = 10
 
-num_trials = 100
+num_trials = 20
 
 unif = Uniform(0, 1)
 
@@ -140,17 +140,16 @@ end
 
 for method in method_list
 
-    df = DataFrame(N=Int64[], exec_time=Float64[], exec_time_std=Float64[],
-                   opt_loss=Float64[], opt_loss_std=Float64[],
-                   error_loss=Float64[], error_loss_std=Float64[])
+    df = DataFrame(N=Int64[], exec_time=Float64[],
+                   opt_loss=Float64[], error_loss=Float64[],
+                   opt_loss_std=Float64[], error_loss_std=Float64[])
 
     for n in N
         current_row = [n,
                        Statistics.mean(data_dict[method][n]["time"]),
-                       Statistics.std(data_dict[method][n]["time"]) / (num_trials^0.5),
                        Statistics.mean(data_dict[method][n]["optimality_loss"]),
-                       Statistics.std(data_dict[method][n]["optimality_loss"]) / (num_trials^0.5),
                        Statistics.mean(data_dict[method][n]["error_loss"]),
+                       Statistics.std(data_dict[method][n]["optimality_loss"]) / (num_trials^0.5),
                        Statistics.std(data_dict[method][n]["error_loss"]) / (num_trials^0.5)]
 
         push!(df, current_row)
