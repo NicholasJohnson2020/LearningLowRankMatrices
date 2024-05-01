@@ -27,7 +27,7 @@ function sample_data(m, n, r, d, missing_frac, noise_variance)
 end
 
 function evaluatePerformance(X_fitted, A_observed, A_true, Y, k, lambda, gamma;
-                             singular_value_threshold=1e-4)
+                             singular_value_threshold=1e-6)
 
     (n, m) = size(A_observed)
     S = zeros(n, m)

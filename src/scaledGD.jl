@@ -1,5 +1,5 @@
 function computeObjectiveGradient(U, V, S, A, Y, lambda, gamma;
-                                  singular_value_threshold=1e-4)
+                                  singular_value_threshold=1e-6)
 
     X = U * V'
     (n, m) = size(X)
@@ -31,7 +31,7 @@ end
 
 function scaledGD(A, k, Y, lambda; gamma=0.01, max_iteration=1000,
                   termination_criteria="rel_improvement", min_improvement=0.001,
-                  step_size=1)
+                  step_size=0.1)
 
     @assert termination_criteria in ["iteration_count", "rel_improvement"]
 
@@ -82,7 +82,7 @@ end
 
 function vanillaGD(A, k, Y, lambda; gamma=0.01, max_iteration=1000,
                   termination_criteria="rel_improvement", min_improvement=0.001,
-                  step_size=1)
+                  step_size=0.01)
 
     @assert termination_criteria in ["iteration_count", "rel_improvement"]
 
@@ -130,7 +130,7 @@ end
 
 function cross_validate(method, A, k, Y, lambda, gamma; num_samples=10,
                         train_frac=0.7, candidate_vals=[10, 1, 0.1, 0.01],
-                        singular_value_threshold=1e-4)
+                        singular_value_threshold=1e-6)
 
     (n, m) = size(A)
 

@@ -1,27 +1,12 @@
-function admmMap(A, k, Y, lambda; gamma=0.01, step_size=10,
-                 residual_threshold=0.01, max_iteration=100)
+function admm(A, k, Y, lambda; gamma=0.01, step_size=10,
+              residual_threshold=0.01, max_iteration=100,
+              initialization="approximate", P_update="exact")
 
-    """
-    function computeAugL()
+    @assert initialization in ["exact", "approximate"]
+    @assert P_update in ["exact", "pqr", "pheig"]
 
-        U = U_iterate
-        V = V_iterate
-        P = P_iterate
-        Z = Z_iterate
-        Phi = Phi_iterate
-        Psi = Psi_iterate
-
-        obj = norm(S .* (U * V' - A)) ^ 2
-        obj += lambda * tr(Y' * (Matrix(I, n, n) - P) * Y)
-        obj += gamma * (norm(U) ^ 2 + norm(V) ^ 2)
-        obj += tr(Phi' * (Matrix(I, n, n) - P) * Z)
-        obj += tr(Psi' * (Z - U))
-        obj += rho_1 / 2 * norm((Matrix(I, n, n) - P) * Z) ^ 2
-        obj += rho_2 / 2 * norm(Z - U) ^ 2
-
-        return obj
-    end
-    """
+    opts = LRAOptions()
+    opts.sketch = :sub
 
     rho_1 = step_size
     rho_2 = step_size
@@ -34,11 +19,14 @@ function admmMap(A, k, Y, lambda; gamma=0.01, step_size=10,
     end
     S = sparse(S)
 
-    L, sigma, R = tsvd(A, k)
+    if initialization == "exact"
+        L_iterate, sigma, R = tsvd(A, k)
+    else
+        L_iterate, sigma, R = psvd(A, rank=k, opts)
+    end
 
-    U_iterate = L * Diagonal(sqrt.(sigma))
+    U_iterate = L_iterate * Diagonal(sqrt.(sigma))
     V_iterate = R * Diagonal(sqrt.(sigma))
-    P_iterate = L * L'
     Z_iterate = U_iterate
 
     Phi_iterate = ones(n, k)
@@ -72,7 +60,7 @@ function admmMap(A, k, Y, lambda; gamma=0.01, step_size=10,
 
         # Perform U Update
         start = now()
-        UParUpdate = pmap(updateU, collect(1:n))
+        UParUpdate = map(updateU, collect(1:n))
         close = now()
         update_time["U_map"] += Dates.value(close - start)
         start = now()
@@ -89,8 +77,14 @@ function admmMap(A, k, Y, lambda; gamma=0.01, step_size=10,
         temp = Phi_iterate * Z_iterate' / 2
         temp += temp'
         temp += cache_Y + (rho_1 / 2) * Z_iterate * Z_iterate'
-        L, _, _ = tsvd(temp, k)
-        P_iterate = L * L'
+
+        if P_update == "exact"
+            L_iterate, _, _ = tsvd(temp, k)
+        elseif P_update == "pqr"
+            L_iterate, _, _ = pqr(temp, rank=k, opts)
+        else
+            _, L_iterate = pheig(temp, rank=k, opts)
+        end
         close = now()
         update_time["P"] += Dates.value(close - start)
 
@@ -98,7 +92,7 @@ function admmMap(A, k, Y, lambda; gamma=0.01, step_size=10,
 
         # Perform V Update
         start = now()
-        VParUpdate = pmap(updateV, collect(1:m))
+        VParUpdate = map(updateV, collect(1:m))
         close = now()
         update_time["V_map"] += Dates.value(close - start)
         start = now()
@@ -112,17 +106,18 @@ function admmMap(A, k, Y, lambda; gamma=0.01, step_size=10,
 
         # Perform Z Update
         start = now()
-        temp = rho_2 * U_iterate - Psi_iterate
-        temp -= (Matrix(I, n, n) - P_iterate) * Phi_iterate
-        Z_iterate = (Matrix(I, n, n) + (rho_1 / rho_2) * P_iterate) * temp
-        Z_iterate = Z_iterate / (rho_1 + rho_2)
+        temp = Phi_iterate + rho_1 * U_iterate - (rho_1 / rho_2) * Psi_iterate
+        temp = L_iterate' * temp
+        temp = L_iterate * temp
+        Z_iterate = (rho_2 * U_iterate - Psi_iterate - Phi_iterate + temp) / (rho_1 + rho_2)
         close = now()
         update_time["Z"] += Dates.value(close - start)
 
         #append!(augL_hist, computeAugL())
 
         # Perform Sigma1 Update
-        Phi_residual = (Matrix(I, n, n) - P_iterate) * Z_iterate
+        Phi_residual = L_iterate' * Z_iterate
+        Phi_residual = Z_iterate - L_iterate * Phi_residual
         Phi_iterate += rho_1 * Phi_residual
 
         #append!(augL_hist, computeAugL())
@@ -142,7 +137,7 @@ function admmMap(A, k, Y, lambda; gamma=0.01, step_size=10,
 
     end
 
-    return U_iterate, V_iterate, P_iterate, Z_iterate, Phi_iterate,
+    return U_iterate, V_iterate, L_iterate, Z_iterate, Phi_iterate,
            Psi_iterate, (Phi_residual_hist,
                          Psi_residual_hist,
                          #augL_hist,
@@ -150,8 +145,8 @@ function admmMap(A, k, Y, lambda; gamma=0.01, step_size=10,
 
 end
 
-function admm(A, k, Y, lambda; gamma=0.01, step_size=10,
-              residual_threshold=0.01, max_iteration=100)
+function admmV0(A, k, Y, lambda; gamma=0.01, step_size=10,
+                residual_threshold=0.01, max_iteration=100)
 
     """
     function computeAugL()

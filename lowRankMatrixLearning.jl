@@ -1,4 +1,4 @@
-using SparseArrays, LinearAlgebra, Random, Distributions, TSVD, OptimKit
+using SparseArrays, LinearAlgebra, Random, Distributions, TSVD, LowRankApprox
 using JuMP, Mosek, MosekTools
 using MatrixImpute
 using PyCall
