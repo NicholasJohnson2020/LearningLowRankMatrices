@@ -28,9 +28,13 @@ function processData(input_path, method_name)
                        :V_exec_time_std]))
    end
 
-   keySet = Dict("admm" => ["Z", "U", "P", "V"],
-                 "admmMap" => ["Z", "U_map", "U_reduce",
-                               "P", "V_map", "V_reduce"])
+   keySet = Dict("admmV0" => ["Z", "U", "P", "V"],
+                 "admm_exact" => ["Z", "U_map", "U_reduce",
+                                  "P", "V_map", "V_reduce"],
+                 "admm_pqr" => ["Z", "U_map", "U_reduce",
+                                "P", "V_map", "V_reduce"],
+                 "admm_pheig" => ["Z", "U_map", "U_reduce",
+                                  "P", "V_map", "V_reduce"])
 
    successful_entries = 0
 
