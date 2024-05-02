@@ -18,7 +18,7 @@ function processData(input_path, method_name)
                    V_reduce_exec_time=Float64[], V_reduce_exec_time_std=Float64[])
 
 
-   if method_name == "admm"
+   if method_name == "admmV0"
        select!(df, Not([:U_map_exec_time, :U_map_exec_time_std,
                :U_reduce_exec_time, :U_reduce_exec_time_std,
                :V_map_exec_time, :V_map_exec_time_std, :V_reduce_exec_time,
