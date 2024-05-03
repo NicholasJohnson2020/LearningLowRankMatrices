@@ -21,7 +21,7 @@ num_trials = 20
 unif = Uniform(0, 1)
 
 output_root = "V_update"
-method_list = ["loop", "pmap", "map", "threads"]
+method_list = ["loop", "pmap", "map", "threads", "backslash"]
 
 data_dict = Dict()
 for method in method_list
@@ -102,6 +102,19 @@ for m in M
 
         elapsed_time = Dates.value(close - start)
         append!(data_dict["threads"][m], elapsed_time)
+
+        # Backslash implementation
+        V_iterate = zeros(m, K)
+        start = now()
+        Threads.@threads for j=1:m
+            inv_mat = 2 * U' * Diagonal(S[:, j]) * U
+            inv_mat += 2 * gamma * Matrix(I, K, K)
+            V_iterate[j, :] = inv_mat \ (2 * U' * A[:, j])
+        end
+        close = now()
+
+        elapsed_time = Dates.value(close - start)
+        append!(data_dict["backslash"][m], elapsed_time)
 
     end
 end
