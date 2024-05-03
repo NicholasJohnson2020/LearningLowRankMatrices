@@ -21,7 +21,7 @@ num_trials = 20
 unif = Uniform(0, 1)
 
 output_root = "V_update"
-method_list = ["loop", "pmap", "map", "simplified"]
+method_list = ["loop", "pmap", "map", "threads"]
 
 data_dict = Dict()
 for method in method_list
@@ -46,19 +46,6 @@ for m in M
 
         updateV = function(j)
             inv_mat = 2 * U' * Diagonal(S[:, j]) * U
-            inv_mat += 2 * gamma * Matrix(I, K, K)
-            inv_mat = inv(inv_mat)
-            return inv_mat * (2 * U' * A[:, j])
-        end
-
-        updateVopt = function(j)
-            filtered_mat = U'
-            for i=1:N
-                if S[i, j] == 0
-                    filtered_mat[:, i] .= 0
-                end
-            end
-            inv_mat = 2 * filtered_mat * U
             inv_mat += 2 * gamma * Matrix(I, K, K)
             inv_mat = inv(inv_mat)
             return inv_mat * (2 * U' * A[:, j])
@@ -102,17 +89,19 @@ for m in M
         elapsed_time = Dates.value(close - start)
         append!(data_dict["map"][m], elapsed_time)
 
-        # simplified implementation
+        # Threaded implementation
         V_iterate = zeros(m, K)
         start = now()
-        VParUpdate = map(updateVopt, collect(1:m))
-        for j=1:m
-            V_iterate[j, :] = VParUpdate[j]
+        Threads.@threads for j=1:m
+            inv_mat = 2 * U' * Diagonal(S[:, j]) * U
+            inv_mat += 2 * gamma * Matrix(I, K, K)
+            inv_mat = inv(inv_mat)
+            V_iterate[j, :] = inv_mat * (2 * U' * A[:, j])
         end
         close = now()
 
         elapsed_time = Dates.value(close - start)
-        append!(data_dict["simplified"][m], elapsed_time)
+        append!(data_dict["threaded"][m], elapsed_time)
 
     end
 end
