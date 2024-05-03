@@ -101,7 +101,7 @@ for m in M
         close = now()
 
         elapsed_time = Dates.value(close - start)
-        append!(data_dict["threaded"][m], elapsed_time)
+        append!(data_dict["threads"][m], elapsed_time)
 
     end
 end
