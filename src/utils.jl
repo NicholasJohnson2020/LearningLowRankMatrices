@@ -38,7 +38,7 @@ function evaluatePerformance(X_fitted, A_observed, A_true, Y, k, lambda, gamma;
 
     U, _, _ = tsvd(X_fitted, k)
     obj = norm(S .* (X_fitted - A_observed))^2
-    obj += lambda * tr(Y' * (Matrix(I, n, n) - U * U') * Y)
+    obj += lambda * norm((Matrix(I, n, n) - U * U') * Y) ^ 2
     obj += 2 * gamma * sum(abs.(svd(X_fitted).S))
 
     MSE = norm(X_fitted - A_true)
