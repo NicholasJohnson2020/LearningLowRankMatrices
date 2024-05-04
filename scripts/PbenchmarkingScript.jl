@@ -22,7 +22,7 @@ num_trials = 10
 unif = Uniform(0, 1)
 
 output_root = "P_update"
-method_list = ["pqr_sub", "tsvd"]
+method_list = ["pqr_sub", "tsvd", "overhead"]
 
 data_dict = Dict()
 for method in method_list
@@ -44,9 +44,19 @@ for n in N
         Z = rand(unif, (n, K))
         Phi = rand(unif, (n, K))
 
+        cache_Y = Y * Y'
+
+        # For overhead
+        start = now()
         temp = Phi * Z' / 2
         temp += temp'
-        temp += Y * Y' + (rho_1 / 2) * Z * Z'
+        temp += lambda * cache_Y + (rho_1 / 2) * Z * Z'
+        close = now()
+        elapsed_time = Dates.value(close - start)
+
+        append!(data_dict["overhead"][n]["time"], elapsed_time)
+        append!(data_dict["overhead"][n]["optimality_loss"], 0)
+        append!(data_dict["overhead"][n]["error_loss"], 0)
 
         # For tsvd implementation
         start = now()
@@ -175,6 +185,6 @@ for method in method_list
         push!(df, current_row)
     end
 
-    CSV.write(output_root * "_" * method * "v2.csv", df)
+    CSV.write(output_root * "_" * method * "v1.csv", df)
 
 end
