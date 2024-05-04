@@ -3,27 +3,26 @@ using RandomizedLinAlg, LowRankApprox
 
 include("../lowRankMatrixLearning.jl")
 
-N = [100, 200, 400, 800, 1000, 2000, 5000, 10000]
+N = [100, 200, 400, 800, 1000, 2000, 5000, 10000, 20000]
 #N = 1000
 #M = [100, 200, 400, 800, 1000, 2000]
 M = 100
 #K = [5, 10, 15, 20, 25, 30, 35, 40]
 K = 5
 
-d = 50
+d = 150
 
 
 lambda = 1 / 100
 rho_1 = 10
 rho_2 = 10
 
-num_trials = 20
+num_trials = 10
 
 unif = Uniform(0, 1)
 
 output_root = "P_update"
-method_list = ["tsvd", "rsvd", "rsvd_fnkz", "pqr_randn", "svd_randn", "eig_randn",
-               "pqr_sub", "svd_sub", "eig_sub"]
+method_list = ["pqr_sub", "tsvd"]
 
 data_dict = Dict()
 for method in method_list
@@ -63,6 +62,25 @@ for n in N
         append!(data_dict["tsvd"][n]["optimality_loss"], 0)
         append!(data_dict["tsvd"][n]["error_loss"], 0)
 
+        opts = LRAOptions()
+        opts.sketch = :sub
+
+        # For pqrfact sub sketch implementation
+        start = now()
+        L, _, _ = pqr(temp, rank=K, opts)
+        close = now()
+        elapsed_time = Dates.value(close - start)
+
+        this_val = L' * temp
+        this_val = tr(L * this_val)
+        this_sol = L * L'
+        append!(data_dict["pqr_" * string(sketch_type)][n]["time"], elapsed_time)
+        append!(data_dict["pqr_" * string(sketch_type)][n]["optimality_loss"], (opt_val - this_val) / opt_val)
+        append!(data_dict["pqr_" * string(sketch_type)][n]["error_loss"], norm(opt_sol - this_sol)^2 / norm(opt_sol)^2)
+
+        # Custom sketch
+
+        """
         # For rsvd implementation
         start = now()
         L, _, _ = rsvd(temp, K)
@@ -135,6 +153,7 @@ for n in N
             append!(data_dict["eig_" * string(sketch_type)][n]["optimality_loss"], (opt_val - this_val) / opt_val)
             append!(data_dict["eig_" * string(sketch_type)][n]["error_loss"], norm(opt_sol - this_sol)^2 / norm(opt_sol)^2)
         end
+        """
     end
 end
 
