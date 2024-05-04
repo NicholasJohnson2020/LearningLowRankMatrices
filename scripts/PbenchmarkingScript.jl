@@ -63,7 +63,8 @@ for n in N
         append!(data_dict["tsvd"][n]["error_loss"], 0)
 
         opts = LRAOptions()
-        opts.sketch = :sub
+        sketch_type = :sub
+        opts.sketch = sketch_type
 
         # For pqrfact sub sketch implementation
         start = now()
