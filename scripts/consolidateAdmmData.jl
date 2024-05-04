@@ -29,13 +29,13 @@ function processData(input_path, method_name)
    end
 
    keySet = Dict()
-   for method_name in ["admmV0", "admm_exact_for", "admm_pqr_for"]
+   for method_name in ["admmV0", "admm_exact", "admm_pqr"]
       keySet[method_name] = ["Z", "U", "P", "V"]
    end
-   for method_name in ["admm_exact", "admm_pqr", "admm_pheig"]
-      keySet[method_name] = ["Z", "U_map", "U_reduce",
-                             "P", "V_map", "V_reduce"]
-   end
+   #for method_name in ["admm_exact", "admm_pqr", "admm_pheig"]
+   #   keySet[method_name] = ["Z", "U_map", "U_reduce",
+   #                          "P", "V_map", "V_reduce"]
+   #end
 
    successful_entries = 0
 
