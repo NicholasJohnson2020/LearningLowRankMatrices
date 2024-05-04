@@ -29,8 +29,7 @@ num_tasks_input = parse(Int64, ARGS[5])
 
 valid_methods = ["ScaledGD", "VanillaGD", "admm_exact",
                  "admm_pqr", "admm_pheig", "admmV0",
-                 "fastImpute", "softImpute", "SVD", "MF",
-                 "admm_pqr_for", "admm_exact_for"]
+                 "fastImpute", "softImpute", "SVD", "MF"]
 
 @assert method_name in valid_methods
 
@@ -98,8 +97,7 @@ for task_ID in task_ID_list
     experiment_results["lambda"] = []
     experiment_results["execution_time"] = []
 
-    if method_name in ["admm_pqr", "admm_pheig", "admm_exact", "admmV0",
-                       "admm_exact_for", "admm_pqr_for"]
+    if method_name in ["admm_pqr", "admm_pheig", "admm_exact", "admmV0"]
         experiment_results["update_times"] = []
         experiment_results["step_size"] = []
     end
@@ -186,36 +184,6 @@ for task_ID in task_ID_list
             end
             trial_start = now()
             output = admm(A_observed, k_target, Y, lambda, gamma=gamma,
-                          step_size=step_size, max_iteration=20,
-                          residual_threshold=1e-4, P_update="pqr")
-            trial_end_time = now()
-            X_fitted = output[1] * output[2]'
-            append!(experiment_results["update_times"], [output[7][3]])
-            append!(experiment_results["step_size"], step_size)
-        elseif method_name == "admm_exact_for"
-            step_size = 10
-            if cross_validate_step_size
-                cv_output = cross_validate(admmV0, A_observed, k_target, Y,
-                                           lambda, gamma)
-                step_size = cv_output[1]
-            end
-            trial_start = now()
-            output = admmFor(A_observed, k_target, Y, lambda, gamma=gamma,
-                          step_size=step_size, max_iteration=20,
-                          residual_threshold=1e-4, P_update="exact")
-            trial_end_time = now()
-            X_fitted = output[1] * output[2]'
-            append!(experiment_results["update_times"], [output[7][3]])
-            append!(experiment_results["step_size"], step_size)
-        elseif method_name == "admm_pqr_for"
-            step_size = 10
-            if cross_validate_step_size
-                cv_output = cross_validate(admmV0, A_observed, k_target, Y,
-                                           lambda, gamma)
-                step_size = cv_output[1]
-            end
-            trial_start = now()
-            output = admmFor(A_observed, k_target, Y, lambda, gamma=gamma,
                           step_size=step_size, max_iteration=20,
                           residual_threshold=1e-4, P_update="pqr")
             trial_end_time = now()
