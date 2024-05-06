@@ -22,7 +22,8 @@ num_trials = 10
 unif = Uniform(0, 1)
 
 output_root = "P_update"
-method_list = ["pqr_sub", "tsvd", "overhead"]
+#method_list = ["pqr_sub", "tsvd", "overhead"]
+method_list = ["tsvd_custom", "rsvd_custom", "pqr_sub", "sub_custom"]
 
 data_dict = Dict()
 for method in method_list
@@ -44,23 +45,26 @@ for n in N
         Z = rand(unif, (n, K))
         Phi = rand(unif, (n, K))
 
-        cache_Y = Y * Y'
-
-        # For overhead
+        # For old overhead
         start = now()
+        cache_Y = Y * Y'
         temp = Phi * Z' / 2
         temp += temp'
         temp += lambda * cache_Y + (rho_1 / 2) * Z * Z'
         close = now()
-        elapsed_time = Dates.value(close - start)
+        old_overhead_time = Dates.value(close - start)
 
-        append!(data_dict["overhead"][n]["time"], elapsed_time)
-        append!(data_dict["overhead"][n]["optimality_loss"], 0)
-        append!(data_dict["overhead"][n]["error_loss"], 0)
+        # For new overhead time
+        start = now()
+        factor_1 = [lambda * Y rho_1 / 2 * Z Phi / 2 Z / 2]
+        factor_2 = [Y Z Z Phi]
+        new_temp = LowRankMat(factor_1, factor_2)
+        close = now()
+        new_overhead_time = Dates.value(close - start)
 
         # For tsvd implementation
         start = now()
-        L, _, _ = tsvd(temp, K)
+        L, _, _ = tsvd(new_temp, K)
         close = now()
         elapsed_time = Dates.value(close - start)
 
@@ -68,9 +72,22 @@ for n in N
         opt_val = tr(L * opt_val)
         opt_sol = L * L'
 
-        append!(data_dict["tsvd"][n]["time"], elapsed_time)
-        append!(data_dict["tsvd"][n]["optimality_loss"], 0)
-        append!(data_dict["tsvd"][n]["error_loss"], 0)
+        append!(data_dict["tsvd_custom"][n]["time"], elapsed_time + new_overhead_time)
+        append!(data_dict["tsvd_custom"][n]["optimality_loss"], 0)
+        append!(data_dict["tsvd_custom"][n]["error_loss"], 0)
+
+        # For rsvd implementation
+        start = now()
+        L, _, _ = rsvd(new_temp, K)
+        close = now()
+        elapsed_time = Dates.value(close - start)
+
+        this_val = L' * temp
+        this_val = tr(L * this_val)
+        this_sol = L * L'
+        append!(data_dict["rsvd_custom"][n]["time"], elapsed_time + new_overhead_time)
+        append!(data_dict["rsvd_custom"][n]["optimality_loss"], (opt_val - this_val) / opt_val)
+        append!(data_dict["rsvd_custom"][n]["error_loss"], norm(opt_sol - this_sol)^2 / norm(opt_sol)^2)
 
         opts = LRAOptions()
         sketch_type = :sub
@@ -85,11 +102,22 @@ for n in N
         this_val = L' * temp
         this_val = tr(L * this_val)
         this_sol = L * L'
-        append!(data_dict["pqr_" * string(sketch_type)][n]["time"], elapsed_time)
+        append!(data_dict["pqr_" * string(sketch_type)][n]["time"], elapsed_time + old_overhead_time)
         append!(data_dict["pqr_" * string(sketch_type)][n]["optimality_loss"], (opt_val - this_val) / opt_val)
         append!(data_dict["pqr_" * string(sketch_type)][n]["error_loss"], norm(opt_sol - this_sol)^2 / norm(opt_sol)^2)
 
         # Custom sketch
+        start = now()
+        L, _, _ = tsvd(subSketch(new_temp, K), K)
+        close = now()
+        elapsed_time = Dates.value(close - start)
+
+        this_val = L' * temp
+        this_val = tr(L * this_val)
+        this_sol = L * L'
+        append!(data_dict["sub_custom"][n]["time"], elapsed_time + new_overhead_time)
+        append!(data_dict["sub_custom"][n]["optimality_loss"], (opt_val - this_val) / opt_val)
+        append!(data_dict["sub_custom"][n]["error_loss"], norm(opt_sol - this_sol)^2 / norm(opt_sol)^2)
 
         """
         # For rsvd implementation
@@ -185,6 +213,6 @@ for method in method_list
         push!(df, current_row)
     end
 
-    CSV.write(output_root * "_" * method * "v1.csv", df)
+    CSV.write(output_root * "_" * method * ".csv", df)
 
 end

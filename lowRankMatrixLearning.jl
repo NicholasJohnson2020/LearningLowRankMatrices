@@ -11,6 +11,7 @@ using Dates, JSON
 
 fancyImpute = pyimport("fancyimpute")
 
+include("src/lowRankMatrix.jl")
 include("src/scaledGD.jl")
 include("src/altMin.jl")
 include("src/admm.jl")
