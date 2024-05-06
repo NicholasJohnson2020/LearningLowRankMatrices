@@ -3,7 +3,7 @@ function admm(A, k, Y, lambda; gamma=0.01, step_size=10,
               initialization="approximate", P_update="exact")
 
     @assert initialization in ["exact", "approximate"]
-    @assert P_update in ["exact", "pqr", "pheig"]
+    @assert P_update in ["exact", "sub_sketch"]
 
     opts = LRAOptions()
     opts.sketch = :sub
@@ -20,19 +20,18 @@ function admm(A, k, Y, lambda; gamma=0.01, step_size=10,
     S = sparse(S)
 
     if initialization == "exact"
-        L_iterate, sigma, R = tsvd(A, k)
+        L, sigma, R = tsvd(A, k)
     else
-        L_iterate, sigma, R = psvd(A, rank=k, opts)
+        L, sigma, R = psvd(A, rank=k, opts)
     end
 
-    U_iterate = L_iterate * Diagonal(sqrt.(sigma))
+    U_iterate = L * Diagonal(sqrt.(sigma))
     V_iterate = R * Diagonal(sqrt.(sigma))
     Z_iterate = U_iterate
+    P_iterate = SymLowRankMat(L)
 
     Phi_iterate = ones(Float64, n, k)
     Psi_iterate = ones(Float64, n, k)
-
-    cache_Y = lambda * Y * Y'
 
     update_time = Dict("U" => 0, "P" => 0, "V" => 0, "Z" => 0)
 
@@ -51,17 +50,15 @@ function admm(A, k, Y, lambda; gamma=0.01, step_size=10,
 
         # Perform P Update
         start = now()
-        temp = Phi_iterate * Z_iterate' / 2
-        temp += temp'
-        temp += cache_Y + (rho_1 / 2) * Z_iterate * Z_iterate'
-
+        factor_1 = [lambda * Y rho_1 / 2 * Z Phi / 2 Z / 2]
+        factor_2 = [Y Z Z Phi]
+        temp = LowRankMat(factor_1, factor_2)
         if P_update == "exact"
-            L_iterate, _, _ = tsvd(temp, k)
-        elseif P_update == "pqr"
-            L_iterate, _, _ = pqr(temp, rank=k, opts)
+            L, _, _ = tsvd(temp, k)
         else
-            _, L_iterate = pheig(temp, rank=k, opts)
+            L, _, _ = tsvd(subSketch(temp, k), k)
         end
+        P_iterate = SymLowRankMat(L)
         close = now()
         update_time["P"] += Dates.value(close - start)
 
@@ -78,8 +75,7 @@ function admm(A, k, Y, lambda; gamma=0.01, step_size=10,
         # Perform Z Update
         start = now()
         temp = Phi_iterate + rho_1 * U_iterate - (rho_1 / rho_2) * Psi_iterate
-        temp = L_iterate' * temp
-        temp = L_iterate * temp
+        temp = P_iterate * temp
         Z_iterate = (rho_2 * U_iterate - Psi_iterate - Phi_iterate + temp) / (rho_1 + rho_2)
         close = now()
         update_time["Z"] += Dates.value(close - start)
@@ -100,7 +96,7 @@ function admm(A, k, Y, lambda; gamma=0.01, step_size=10,
 
     end
 
-    return U_iterate, V_iterate, L_iterate, Z_iterate, Phi_iterate,
+    return U_iterate, V_iterate, P_iterate, Z_iterate, Phi_iterate,
            Psi_iterate, (0, 0, update_time)
 
 end
