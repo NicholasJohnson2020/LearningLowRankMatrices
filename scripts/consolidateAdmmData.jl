@@ -18,7 +18,7 @@ function processData(input_path, method_name)
                    V_reduce_exec_time=Float64[], V_reduce_exec_time_std=Float64[])
 
 
-   if method_name in ["admmV0", "admm_exact", "admm_pqr"]
+   if method_name in ["admmV0", "admm_exact", "admm_pqr", "admm_sub"]
        select!(df, Not([:U_map_exec_time, :U_map_exec_time_std,
                :U_reduce_exec_time, :U_reduce_exec_time_std,
                :V_map_exec_time, :V_map_exec_time_std, :V_reduce_exec_time,
@@ -29,7 +29,7 @@ function processData(input_path, method_name)
    end
 
    keySet = Dict()
-   for method_name in ["admmV0", "admm_exact", "admm_pqr"]
+   for method_name in ["admmV0", "admm_exact", "admm_pqr", "admm_sub"]
       keySet[method_name] = ["Z", "U", "P", "V"]
    end
    #for method_name in ["admm_exact", "admm_pqr", "admm_pheig"]
