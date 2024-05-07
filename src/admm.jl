@@ -50,8 +50,8 @@ function admm(A, k, Y, lambda; gamma=0.01, step_size=10,
 
         # Perform P Update
         start = now()
-        factor_1 = [lambda * Y rho_1 / 2 * Z Phi / 2 Z / 2]
-        factor_2 = [Y Z Z Phi]
+        factor_1 = [lambda * Y rho_1 / 2 * Z_iterate Phi_iterate / 2 Z_iterate / 2]
+        factor_2 = [Y Z_iterate Z_iterate Phi_iterate]
         temp = LowRankMat(factor_1, factor_2)
         if P_update == "exact"
             L, _, _ = tsvd(temp, k)
