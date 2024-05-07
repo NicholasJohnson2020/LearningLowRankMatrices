@@ -81,8 +81,7 @@ function admm(A, k, Y, lambda; gamma=0.01, step_size=10,
         update_time["Z"] += Dates.value(close - start)
 
         # Perform Sigma1 Update
-        Phi_residual = L_iterate' * Z_iterate
-        Phi_residual = Z_iterate - L_iterate * Phi_residual
+        Phi_residual = Z_iterate - P_iterate * Z_iterate
         Phi_iterate += rho_1 * Phi_residual
 
         # Perform Sigma2 Update
