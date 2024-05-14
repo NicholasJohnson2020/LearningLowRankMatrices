@@ -1,7 +1,7 @@
 ### Run this on cluster! Takes up too much memory on local machine
 using JSON
 
-ROOT_PATH = "~/research/data/low-rank-learning/netflix/netflix_data"
+ROOT_PATH = "~/research/data/low-rank-learning/netflix/netflix_data/"
 
 files = ["combined_data_1.txt",
          "combined_data_2.txt",
