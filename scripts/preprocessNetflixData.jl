@@ -53,9 +53,6 @@ for this_file in files
     end
 end
 
-println()
-println("Processed $movie_index total movies.")
-
 netflix_data = Dict()
 netflix_data["userIndexIdMap"] = userIndexIdMap
 netflix_data["userIdIndexMap"] = userIdIndexMap
