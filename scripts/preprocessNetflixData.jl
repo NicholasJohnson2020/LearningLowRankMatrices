@@ -25,7 +25,7 @@ for this_file in files
         movie_index = 0
 
         # read till end of file (edit this line out when running on the cluster)
-        while ((! eof(f)) & (movie_index <= 2000))
+        while (! eof(f))
 
             # read a new / next line for every iteration
             s = readline(f)
