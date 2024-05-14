@@ -18,7 +18,7 @@ j_index = []
 val_index = []
 
 for this_file in files
-    open(ROOT_PATH * this_file) do f
+    open(ROOT_PATH * this_file, "r") do f
 
         # line_number
         line = 0
