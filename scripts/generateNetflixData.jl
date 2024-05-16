@@ -91,7 +91,7 @@ Y_colnames_raw = ["budget", "revenue", "popularity",
 
 if version_mode == 1
     Y = Y_raw[:, 3:end]
-    Y_colnames = Y_colnames_raw[3:end]
+    Y_col_names = Y_colnames_raw[3:end]
     output_path = ROOT_PATH * "4Y_"
 else
     Y = Y_raw
