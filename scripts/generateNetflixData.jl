@@ -113,11 +113,10 @@ data_dict["d"] = size(Y)[2]
 data_dict["Y_cols"] = Y_col_names
 data_dict["missing"] = missing_frac
 
-for k in K
-    global config_count += 1
-    param_dict[config_count] = Dict("N"=>n, "M"=>m, "K"=>k, "D"=>size(Y)[2],
+for (index, k) in enumerate(K)
+    param_dict[index] = Dict("N"=>n, "M"=>m, "K"=>k, "D"=>size(Y)[2],
                                     "frac"=>missing_frac)
-    data_dict[string(param_dict[config_count])] = Dict()
+    data_dict[string(param_dict[index])] = Dict()
 end
 
 for trial_num=1:NUM_TRIALS_PER_CONFIG
