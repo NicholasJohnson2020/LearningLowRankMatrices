@@ -11,34 +11,42 @@ function filterData(Y);
     raw_j = processed_data["j"]
     raw_val = processed_data["val"]
 
-    partial_filtered_i = []
-    partial_filtered_j = []
-    partial_filtered_val = []
+    num_elements_raw = length(raw_i)
+    partial_filtered_i = zeros(Int16, num_elements_raw)
+    partial_filtered_j = zeros(Int32, num_elements_raw)
+    partial_filtered_val = zeros(Int8, num_elements_raw)
 
     # Filter out movies for which we do not have features
-    num_elements_raw = length(raw_i)
     for index=1:num_elements_raw
         if raw_i[index] in netflixID_map
-            append!(partial_filtered_i, raw_i[index])
-            append!(partial_filtered_j, raw_j[index])
-            append!(partial_filtered_val, raw_val[index])
+            partial_filtered_i[filtered_index] = raw_i[index]
+            partial_filtered_j[filtered_index] = raw_j[index]
+            partial_filtered_val[filtered_index] = raw_val[index]
+            filtered_index += 1
         end
     end
+    partial_filtered_i = partial_filtered_i[1:(filtered_index-1)]
+    partial_filtered_j = partial_filtered_j[1:(filtered_index-1)]
+    partial_filtered_val = partial_filtered_val[1:(filtered_index-1)]
 
-    filtered_i = []
-    filtered_j = []
-    filtered_val = []
+    num_elements_partial = length(partial_filtered_i)
+    filtered_i = zeros(Int16, num_elements_partial)
+    filtered_j = zeros(Int32, num_elements_partial)
+    filtered_val = zeros(Int8, num_elements_partial)
 
     # Filter out users who have rated less than 5 movies
     counts = countmap(partial_filtered_j)
-    num_elements_partial = length(partial_filtered_i)
     for index=1:num_elements_partial
         if counts[partial_filtered_j[index]] >= 5
-            append!(filtered_i, partial_filtered_i[index])
-            append!(filtered_j, partial_filtered_j[index])
-            append!(filtered_val, partial_filtered_val[index])
+            filtered_i[filtered_index] = partial_filtered_i[index]
+            filtered_j[filtered_index] = partial_filtered_j[index]
+            filtered_val[filtered_index] = partial_filtered_val[index]
+            filtered_index += 1
         end
     end
+    filtered_i = filtered_i[1:(filtered_index-1)]
+    filtered_j = filtered_j[1:(filtered_index-1)]
+    filtered_val = filtered_val[1:(filtered_index-1)]
 
     return filtered_i, filtered_j, filtered_val
 
@@ -48,11 +56,35 @@ end;
 function performMasking(i_data, j_data, val_data, test_frac);
 
     num_examples = length(i_data)
-    test_indices = sort(sample(1:num_examples, Int(floor(test_frac * num_examples)), replace = false))
-    train_indices = [i for i=1:num_examples if !(i in test_indices)]
 
-    return (i_data[train_indices], j_data[train_indices], val_data[train_indices]),
-           (i_data[test_indices], j_data[test_indices], val_data[test_indices])
+    train_i = zeros(Int16, num_examples)
+    train_j = zeros(Int32, num_examples)
+    train_val = zeros(Int8, num_examples)
+
+    test_i = zeros(Int16, num_examples)
+    test_j = zeros(Int32, num_examples)
+    test_val = zeros(Int8, num_examples)
+
+    train_index = 1
+    test_index = 1
+    for data_index=1:num_examples
+        if rand(Uniform(0, 1)) < test_frac
+            # Add to test data
+            test_i[test_index] = i_data[data_index]
+            test_j[test_index] = j_data[data_index]
+            test_val[test_index] = val_data[data_index]
+            test_index += 1
+        else
+            # Add to train data
+            train_i[train_index] = i_data[data_index]
+            train_j[train_index] = j_data[data_index]
+            train_val[train_index] = val_data[data_index]
+            train_index += 1
+        end
+    end
+
+    return (train_i[1:(train_index-1)], train_j[1:(train_index-1)], train_val[1:(train_index-1)]),
+           (test_i[1:(test_index-1)], test_j[1:(test_index-1)], test_val[1:(test_index-1)])
 end;
 
 
