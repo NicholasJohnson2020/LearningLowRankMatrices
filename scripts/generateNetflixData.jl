@@ -17,6 +17,7 @@ function filterData(Y);
     partial_filtered_val = zeros(Int8, num_elements_raw)
 
     # Filter out movies for which we do not have features
+    filtered_index = 1
     for index=1:num_elements_raw
         if raw_i[index] in netflixID_map
             partial_filtered_i[filtered_index] = raw_i[index]
@@ -36,6 +37,7 @@ function filterData(Y);
 
     # Filter out users who have rated less than 5 movies
     counts = countmap(partial_filtered_j)
+    filtered_index = 1
     for index=1:num_elements_partial
         if counts[partial_filtered_j[index]] >= 5
             filtered_i[filtered_index] = partial_filtered_i[index]
