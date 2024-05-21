@@ -1,4 +1,4 @@
-using SparseArrays, NPZ, JSON, StatsBase, Random, Dates
+using SparseArrays, NPZ, JSON, StatsBase, Random, Dates, Distributions
 
 function filterData(Y);
     # filter Y to only keep indices that have values across all columns
