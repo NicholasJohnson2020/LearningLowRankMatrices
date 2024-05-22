@@ -96,7 +96,7 @@ version_mode = parse(Int64, ARGS[1])
 # version_mode 1 corresponds to 4 Y features
 # version_mode 2 corresponds to 6 Y features
 
-NUM_TRIALS_PER_CONFIG = 5
+NUM_TRIALS_PER_CONFIG = 1
 
 ROOT_PATH = "../../../data/low-rank-learning/netflix/netflix_data/"
 
