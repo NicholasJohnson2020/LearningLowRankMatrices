@@ -96,7 +96,7 @@ version_mode = parse(Int64, ARGS[1])
 # version_mode 1 corresponds to 4 Y features
 # version_mode 2 corresponds to 6 Y features
 
-NUM_TRIALS_PER_CONFIG = 1
+NUM_TRIALS_PER_CONFIG = 5
 
 ROOT_PATH = "../../../data/low-rank-learning/netflix/netflix_data/"
 
@@ -152,25 +152,22 @@ data_dict["missing"] = missing_frac
 
 for (index, k) in enumerate(K)
     param_dict[index] = Dict("N"=>n, "M"=>m, "K"=>k, "D"=>size(Y)[2],
-                                    "frac"=>missing_frac)
-    data_dict[string(param_dict[index])] = Dict()
+                             "frac"=>missing_frac)
 end
 
+data_dict["Y"] = Y
 for trial_num=1:NUM_TRIALS_PER_CONFIG
     # sample the data
     train_data, test_data = performMasking(i_data, j_data, val_data, test_frac)
     train_i, train_j, train_val = train_data
     test_i, test_j, test_val = test_data
-    for (index, k) in enumerate(K)
-        # store in dataframe at correct location
-        data_dict[string(param_dict[index])][trial_num] = Dict("train_i"=>train_i,
-                                                               "train_j"=>train_j,
-                                                               "train_val"=>train_val,
-                                                               "Y"=>Y,
-                                                               "k"=>k,
-                                                               "test_i"=>test_i,
-                                                               "test_j"=>test_j,
-                                                               "test_val"=>test_val)
+    # store in dataframe at correct location
+    data_dict[trial_num] = Dict("train_i"=>train_i,
+                                "train_j"=>train_j,
+                                "train_val"=>train_val,
+                                "test_i"=>test_i,
+                                "test_j"=>test_j,
+                                "test_val"=>test_val)
     end
 end
 
