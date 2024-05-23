@@ -137,6 +137,9 @@ start = now()
 
 i_data, j_data, val_data = filterData(Y)
 
+processed_data = nothing
+GC.gc()
+
 # Extract N, M, D, missing_frac
 n = length(unique(i_data))
 m = length(unique(j_data))
@@ -156,11 +159,13 @@ end
 for trial_num=1:NUM_TRIALS_PER_CONFIG
     # sample the data
     train_data, test_data = performMasking(i_data, j_data, val_data, test_frac)
-    A_observed = sparse(train_data[1], train_data[2], train_data[3])
+    test_i, test_j, test_val = train_data
     test_i, test_j, test_val = test_data
     for (index, k) in enumerate(K)
         # store in dataframe at correct location
-        data_dict[string(param_dict[index])][trial_num] = Dict("A_observed"=>A_observed,
+        data_dict[string(param_dict[index])][trial_num] = Dict("train_i"=>train_i,
+                                                               "train_j"=>train_j,
+                                                               "train_val"=>train_val,
                                                                "Y"=>Y,
                                                                "k"=>k,
                                                                "test_i"=>test_i,
