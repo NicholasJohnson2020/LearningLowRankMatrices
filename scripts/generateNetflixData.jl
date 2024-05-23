@@ -159,7 +159,7 @@ end
 for trial_num=1:NUM_TRIALS_PER_CONFIG
     # sample the data
     train_data, test_data = performMasking(i_data, j_data, val_data, test_frac)
-    test_i, test_j, test_val = train_data
+    train_i, train_j, train_val = train_data
     test_i, test_j, test_val = test_data
     for (index, k) in enumerate(K)
         # store in dataframe at correct location
