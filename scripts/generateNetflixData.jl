@@ -107,6 +107,7 @@ test_frac = 0.2
 data_dict = Dict()
 param_dict = Dict()
 
+data_dict["Configs"] = length(K)
 data_dict["Trials"] = NUM_TRIALS_PER_CONFIG
 data_dict["Test Frac"] = test_frac
 
