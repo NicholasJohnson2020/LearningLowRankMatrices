@@ -50,7 +50,7 @@ function filterData(Y);
     filtered_j = filtered_j[1:(filtered_index-1)]
     filtered_val = filtered_val[1:(filtered_index-1)]
 
-    return filtered_i, filtered_j, filtered_val
+    return filtered_i, filtered_j, filtered_val, Y
 
 end;
 
@@ -136,7 +136,8 @@ end
 
 start = now()
 
-i_data, j_data, val_data = filterData(Y)
+i_data, j_data, val_data, Y_data = filterData(Y)
+
 
 processed_data = nothing
 GC.gc()
@@ -156,7 +157,7 @@ for (index, k) in enumerate(K)
                              "frac"=>missing_frac)
 end
 
-data_dict["Y"] = Y
+data_dict["Y"] = Y_data
 for trial_num=1:NUM_TRIALS_PER_CONFIG
     # sample the data
     train_data, test_data = performMasking(i_data, j_data, val_data, test_frac)
