@@ -169,7 +169,6 @@ for trial_num=1:NUM_TRIALS_PER_CONFIG
                                 "test_i"=>test_i,
                                 "test_j"=>test_j,
                                 "test_val"=>test_val)
-    end
 end
 
 elapsed_time = now() - start
