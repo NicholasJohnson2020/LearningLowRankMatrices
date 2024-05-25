@@ -65,11 +65,11 @@ for (index, k) in enumerate(K)
     global param_dict
 
     # Load experiment specific data
-    n = param_dict[index]["N"]
-    m = param_dict[index]["M"]
-    k_target = param_dict[index]["K"]
-    d = param_dict[index]["D"]
-    missing_frac = param_dict[index]["frac"]
+    n = param_dict[string(index)]["N"]
+    m = param_dict[string(index)]["M"]
+    k_target = param_dict[string(index)]["K"]
+    d = param_dict[string(index)]["D"]
+    missing_frac = param_dict[string(index)]["frac"]
 
     # Create dictionary to store experiment results
     experiment_results = Dict()
@@ -101,15 +101,15 @@ for (index, k) in enumerate(K)
 
         println("Starting trial " * string(trial_num) * " of " * string(NUM_TRIALS))
 
-        train_i = netflix_data[trial_num]["train_i"]
-        train_j = netflix_data[trial_num]["train_j"]
-        train_val = netflix_data[trial_num]["train_val"]
+        train_i = netflix_data[string(trial_num)]["train_i"]
+        train_j = netflix_data[string(trial_num)]["train_j"]
+        train_val = netflix_data[string(trial_num)]["train_val"]
 
         A_observed = sparse(train_i, train_j, train_val)
 
-        test_i = netflix_data[trial_num]["test_i"]
-        test_j = netflix_data[trial_num]["test_j"]
-        test_val = netflix_data[trial_num]["test_val"]
+        test_i = netflix_data[string(trial_num)]["test_i"]
+        test_j = netflix_data[string(trial_num)]["test_j"]
+        test_val = netflix_data[string(trial_num)]["test_val"]
 
         gamma = 1 / 10
         lambda = 1 / 100
