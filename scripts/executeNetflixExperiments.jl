@@ -105,11 +105,19 @@ for (index, k) in enumerate(K)
         train_j = netflix_data[string(trial_num)]["train_j"]
         train_val = netflix_data[string(trial_num)]["train_val"]
 
+        train_i = convert(Vector{Int64}, train_i)
+        train_j = convert(Vector{Int64}, train_j)
+        train_val = convert(Vector{Int64}, train_val)
+
         A_observed = sparse(train_i, train_j, train_val)
 
         test_i = netflix_data[string(trial_num)]["test_i"]
         test_j = netflix_data[string(trial_num)]["test_j"]
         test_val = netflix_data[string(trial_num)]["test_val"]
+
+        test_i = convert(Vector{Int64}, test_i)
+        test_j = convert(Vector{Int64}, test_j)
+        test_val = convert(Vector{Int64}, test_val)
 
         gamma = 1 / 10
         lambda = 1 / 100
