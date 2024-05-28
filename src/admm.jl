@@ -13,11 +13,7 @@ function admm(A, k, Y, lambda; gamma=0.01, step_size=10,
 
     (n, m) = size(A)
     d = size(Y)[2]
-    S = zeros(Int8, n, m)
-    for (i, j, value) in zip(findnz(A)...)
-      S[i, j] = 1
-    end
-    S = sparse(S)
+    S = sparse(findnz(A)...)
 
     if initialization == "exact"
         L, sigma, R = tsvd(A, k)

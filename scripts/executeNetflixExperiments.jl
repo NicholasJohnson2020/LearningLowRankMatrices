@@ -128,7 +128,8 @@ for (index, k) in enumerate(K)
             trial_start = now()
             output = admm(A_observed, k_target, Y, lambda, gamma=gamma,
                           step_size=step_size, max_iteration=20,
-                          residual_threshold=1e-4, P_update="exact")
+                          residual_threshold=1e-4, initialization="exact",
+                          P_update="exact")
             trial_end_time = now()
             U_fitted = output[1]
             V_fitted = output[2]
@@ -139,7 +140,8 @@ for (index, k) in enumerate(K)
             trial_start = now()
             output = admm(A_observed, k_target, Y, lambda, gamma=gamma,
                           step_size=step_size, max_iteration=20,
-                          residual_threshold=1e-4, P_update="sub_sketch")
+                          residual_threshold=1e-4, initialization="exact",
+                          P_update="sub_sketch")
             trial_end_time = now()
             U_fitted = output[1]
             V_fitted = output[2]
