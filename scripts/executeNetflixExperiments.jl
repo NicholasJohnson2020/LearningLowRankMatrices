@@ -31,7 +31,7 @@ valid_types = ["4Y", "6Y"]
 @assert method_name in valid_methods
 @assert data_type in valid_types
 
-output_path = input_path * data_type * '/' * method_name
+output_path = input_path * data_type * '/' * method_name * '/'
 
 # Load the data
 netflix_data = Dict()
