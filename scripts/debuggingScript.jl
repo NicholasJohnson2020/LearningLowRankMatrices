@@ -116,6 +116,27 @@ for (index, k) in enumerate(K)
         println()
         println(typeof(A_observed))
 
+        non_int_i = 0
+        non_int_j = 0
+        non_int_val = 0
+        for iterate=1:length(train_i)
+            if typeof(train_i[iterate]) != Int64
+                non_int_i += 1
+            end
+            if typeof(train_j[iterate]) != Int64
+                non_int_j += 1
+            end
+            if typeof(train_val[iterate]) != Int64
+                non_int_val += 1
+            end
+        end
+
+        println()
+        println(non_int_i)
+        println(non_int_j)
+        println(non_int_val)
+
+
         """
 
         test_i = netflix_data[string(trial_num)]["test_i"]
