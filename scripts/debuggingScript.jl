@@ -111,8 +111,12 @@ for (index, k) in enumerate(K)
         println(train_val[1])
         println(typeof(train_val[1]))
 
-        """
         A_observed = sparse(train_i, train_j, train_val)
+
+        println()
+        println(typeof(A_observed))
+
+        """
 
         test_i = netflix_data[string(trial_num)]["test_i"]
         test_j = netflix_data[string(trial_num)]["test_j"]
