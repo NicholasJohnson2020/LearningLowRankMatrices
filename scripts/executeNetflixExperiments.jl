@@ -158,10 +158,6 @@ for (index, k) in enumerate(K)
         end
 
         # Compute the performance measures of the returned solution
-        objective, MSE = evaluatePerformance(X_fitted, A_observed, A_true, Y,
-                                             k_target, lambda, gamma)
-        reconstruction_error = MSE ^ 2 / norm(A_true) ^ 2
-        fitted_rank = rank(X_fitted)
         elapsed_time = Dates.value(trial_end_time - trial_start)
 
         # Do in sample and out of sample evaluation using a threaded loop
