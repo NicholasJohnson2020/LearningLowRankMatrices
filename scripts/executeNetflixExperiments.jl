@@ -109,7 +109,7 @@ for (index, k) in enumerate(K)
         train_j = convert(Vector{Int64}, train_j)
         train_val = convert(Vector{Int64}, train_val)
 
-        A_observed = sparse(train_i, train_j, train_val)
+        A_observed = sparse(train_i, train_j, train_val, n, m)
 
         test_i = netflix_data[string(trial_num)]["test_i"]
         test_j = netflix_data[string(trial_num)]["test_j"]

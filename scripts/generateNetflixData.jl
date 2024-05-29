@@ -50,7 +50,26 @@ function filterData(Y);
     filtered_j = filtered_j[1:(filtered_index-1)]
     filtered_val = filtered_val[1:(filtered_index-1)]
 
-    return filtered_i, filtered_j, filtered_val, Y
+    reverseNetflixIDMap = Dict()
+    for (index, val) in enumerate(netflixID_map)
+        reverseNetflixIDMap[val] = index
+    end
+    i_data = zeros(Int16, length(filtered_i))
+    for (index, val) in enumerate(filtered_i)
+        i_data[index] = Int16(reverseNetflixIDMap[val])
+    end
+
+    userIDs = unique(filtered_j)
+    reverseUserIDMap = Dict()
+    for (index, val) in enumerate(userIDs)
+        reverseUserIDMap[val] = index
+    end
+    j_data = zeros(Int32, length(filtered_j))
+    for (index, val) in enumerate(filtered_j)
+        j_data[index] = Int32(reverseUserIDMap[val])
+    end
+
+    return i_data, j_data, filtered_val, Y
 
 end;
 

@@ -13,6 +13,9 @@ function admm(A, k, Y, lambda; gamma=0.01, step_size=10,
 
     (n, m) = size(A)
     d = size(Y)[2]
+
+    @assert size(Y)[1] == n
+
     S = sparse(findnz(A)...)
 
     if initialization == "exact"
