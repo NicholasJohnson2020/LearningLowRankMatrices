@@ -56,8 +56,8 @@ NUM_TRIALS = netflix_data["Trials"]
 start_time_global = now()
 
 # Main loop to execute experiments
-# old_K = [3, 4, 5, 6, 7, 8, 9, 10]
-K = [5, 6, 7, 8, 9, 10]
+K = [3, 4, 5, 6, 7, 8, 9, 10]
+# K = [5, 6, 7, 8, 9, 10]
 
 task_ID_list = collect((task_ID_input+1):num_tasks_input:length(K))
 
@@ -66,7 +66,7 @@ Y = unserialize_matrix(netflix_data["Y"])
 for raw_index in task_ID_list
 
     k = K[raw_index]
-    index = raw_index + 2
+    index = raw_index
 
     global netflix_data
     global param_dict
