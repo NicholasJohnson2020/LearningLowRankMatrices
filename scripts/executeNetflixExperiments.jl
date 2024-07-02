@@ -126,7 +126,7 @@ for raw_index in task_ID_list
         test_j = convert(Vector{Int64}, test_j)
         test_val = convert(Vector{Int64}, test_val)
 
-        gamma = 1 / 100
+        gamma = 1 / 100000
         lambda = 1 / 10000
 
         # Switch to execute the specified method
