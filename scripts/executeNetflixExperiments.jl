@@ -126,8 +126,8 @@ for raw_index in task_ID_list
         test_j = convert(Vector{Int64}, test_j)
         test_val = convert(Vector{Int64}, test_val)
 
-        gamma = 1 / length(train_val)
-        lambda = 1 / length(train_val)
+        gamma = (1 / length(train_val)) ^ 2
+        lambda = (1 / length(train_val)) ^ 2
 
         # Switch to execute the specified method
         if method_name == "admm_exact"
