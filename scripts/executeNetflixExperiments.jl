@@ -136,7 +136,7 @@ for raw_index in task_ID_list
             step_size = 10
             trial_start = now()
             output = admm(A_observed, k_target, Y, lambda, gamma=gamma,
-                          step_size=step_size, max_iteration=20,
+                          step_size=step_size, max_iteration=100,
                           residual_threshold=1e-4, initialization="exact",
                           P_update="exact")
             trial_end_time = now()
@@ -148,7 +148,7 @@ for raw_index in task_ID_list
             step_size = 10
             trial_start = now()
             output = admm(A_observed, k_target, Y, lambda, gamma=gamma,
-                          step_size=step_size, max_iteration=20,
+                          step_size=step_size, max_iteration=100,
                           residual_threshold=1e-4, initialization="exact",
                           P_update="sub_sketch")
             trial_end_time = now()
