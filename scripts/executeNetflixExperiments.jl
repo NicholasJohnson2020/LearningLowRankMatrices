@@ -133,10 +133,10 @@ for raw_index in task_ID_list
 
         # Switch to execute the specified method
         if method_name == "admm_exact"
-            step_size = 10
+            step_size = 1000
             trial_start = now()
             output = admm(A_observed, k_target, Y, lambda, gamma=gamma,
-                          step_size=step_size, max_iteration=100,
+                          step_size=step_size, max_iteration=20,
                           residual_threshold=1e-4, initialization="exact",
                           P_update="exact")
             trial_end_time = now()
@@ -148,7 +148,7 @@ for raw_index in task_ID_list
             step_size = 10
             trial_start = now()
             output = admm(A_observed, k_target, Y, lambda, gamma=gamma,
-                          step_size=step_size, max_iteration=100,
+                          step_size=step_size, max_iteration=20,
                           residual_threshold=1e-4, initialization="exact",
                           P_update="sub_sketch")
             trial_end_time = now()
