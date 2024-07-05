@@ -133,7 +133,7 @@ for raw_index in task_ID_list
 
         # Switch to execute the specified method
         if method_name == "admm_exact"
-            step_size = 1000
+            step_size = 100000
             trial_start = now()
             output = admm(A_observed, k_target, Y, lambda, gamma=gamma,
                           step_size=step_size, max_iteration=20,
