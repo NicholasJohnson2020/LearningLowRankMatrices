@@ -56,16 +56,20 @@ NUM_TRIALS = netflix_data["Trials"]
 start_time_global = now()
 
 # Main loop to execute experiments
-K = [3, 4, 5, 6, 7, 8, 9, 10]
-# K = [5, 6, 7, 8, 9, 10]
+#K = [3, 4, 5, 6, 7, 8, 9, 10]
+STEP_SIZES = [0.001, 0.01, 0.1, 0.5, 1, 5, 10, 20,
+              50, 75, 100, 150, 200, 500, 1000, 2000,
+              5000, 8000, 10000, 15000, 20000, 50000, 75000, 100000]
 
-task_ID_list = collect((task_ID_input+1):num_tasks_input:length(K))
+#task_ID_list = collect((task_ID_input+1):num_tasks_input:length(K))
+task_ID_list = collect((task_ID_input+1):num_tasks_input:length(STEP_SIZES))
 
 Y = unserialize_matrix(netflix_data["Y"])
 #for (index, k) in enumerate(K)
 for raw_index in task_ID_list
 
-    k = K[raw_index]
+    #k = K[raw_index]
+    k = 3
     index = raw_index
 
     global netflix_data
@@ -99,6 +103,8 @@ for raw_index in task_ID_list
     if method_name in ["admm_sub", "admm_exact"]
         experiment_results["update_times"] = []
         experiment_results["step_size"] = []
+        experiment_results["Phi_residual"] = []
+        experiment_results["Psi_residual"] = []
     end
 
     start_time = now()
@@ -127,13 +133,14 @@ for raw_index in task_ID_list
         test_val = convert(Vector{Int64}, test_val)
 
         #gamma = 1 / length(train_val)
-        gamma = 1 / (10 * n * m)
+        gamma = 1 / (100 * n * m)
         #lambda = (1 / length(train_val)) ^ 2
         lambda = 0
 
         # Switch to execute the specified method
         if method_name == "admm_exact"
-            step_size = 0.01
+            #step_size = 0.01
+            step_size = STEP_SIZES[raw_index]
             trial_start = now()
             output = admm(A_observed, k_target, Y, lambda, gamma=gamma,
                           step_size=step_size, max_iteration=20,
@@ -142,6 +149,15 @@ for raw_index in task_ID_list
             trial_end_time = now()
             U_fitted = output[1]
             V_fitted = output[2]
+            P_fitted = output[3]
+            Z_fitted = output[4]
+
+            Phi_residual = Z_fitted - P_fitted * Z_fitted
+            Psi_residual = Z_fitted - U_fitted
+
+            append!(experiment_results["Phi_residual"], norm(Phi_residual)^2)
+            append!(experiment_results["Psi_residual"], norm(Psi_residual)^2)
+
             append!(experiment_results["update_times"], [output[7][3]])
             append!(experiment_results["step_size"], step_size)
         elseif method_name == "admm_sub"
