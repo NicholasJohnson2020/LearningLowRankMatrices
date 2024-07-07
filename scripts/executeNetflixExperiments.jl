@@ -69,8 +69,9 @@ Y = unserialize_matrix(netflix_data["Y"])
 for raw_index in task_ID_list
 
     #k = K[raw_index]
-    k = 3
-    index = raw_index
+    #k = 3
+    #index = raw_index
+    index = 0
 
     global netflix_data
     global param_dict
@@ -78,7 +79,8 @@ for raw_index in task_ID_list
     # Load experiment specific data
     n = param_dict[string(index)]["N"]
     m = param_dict[string(index)]["M"]
-    k_target = param_dict[string(index)]["K"]
+    #k_target = param_dict[string(index)]["K"]
+    k_target = 3
     d = param_dict[string(index)]["D"]
     missing_frac = param_dict[string(index)]["frac"]
 
