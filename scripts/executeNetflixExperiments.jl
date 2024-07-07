@@ -71,7 +71,7 @@ for raw_index in task_ID_list
     #k = K[raw_index]
     #k = 3
     #index = raw_index
-    index = 0
+    index = 1
 
     global netflix_data
     global param_dict
