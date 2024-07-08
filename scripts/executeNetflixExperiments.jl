@@ -58,8 +58,7 @@ start_time_global = now()
 # Main loop to execute experiments
 #K = [3, 4, 5, 6, 7, 8, 9, 10]
 STEP_SIZES = [0.001, 0.01, 0.1, 0.5, 1, 5, 10, 20,
-              50, 75, 100, 150, 200, 500, 1000, 2000,
-              5000, 8000, 10000, 15000, 20000, 50000, 75000, 100000]
+              50, 75, 100, 150, 200, 500, 1000, 2000]
 
 #task_ID_list = collect((task_ID_input+1):num_tasks_input:length(K))
 task_ID_list = collect((task_ID_input+1):num_tasks_input:length(STEP_SIZES))
@@ -92,7 +91,9 @@ for raw_index in task_ID_list
     experiment_results["K"] = k_target
     experiment_results["D"] = d
     experiment_results["frac"] = missing_frac
-    experiment_results["Trials"] = NUM_TRIALS
+
+    #experiment_results["Trials"] = NUM_TRIALS
+    NUM_TRIALS = 1
 
     experiment_results["train_size"] = []
     experiment_results["test_size"] = []
@@ -107,6 +108,10 @@ for raw_index in task_ID_list
         experiment_results["step_size"] = []
         experiment_results["Phi_residual"] = []
         experiment_results["Psi_residual"] = []
+        experiment_results["Phi_residual_hist"] = []
+        experiment_results["Psi_residual_hist"] = []
+        experiment_results["obj_hist"] = []
+        experiment_results["augL_hist"] = []
     end
 
     start_time = now()
@@ -159,6 +164,11 @@ for raw_index in task_ID_list
 
             append!(experiment_results["Phi_residual"], norm(Phi_residual)^2)
             append!(experiment_results["Psi_residual"], norm(Psi_residual)^2)
+
+            append!(experiment_results["Phi_residual_hist"], [output[8][3]])
+            append!(experiment_results["Psi_residual_hist"], [output[8][4]])
+            append!(experiment_results["obj_hist"], [output[8][1]])
+            append!(experiment_results["augL_hist"], [output[8][2]])
 
             append!(experiment_results["update_times"], [output[7][3]])
             append!(experiment_results["step_size"], step_size)
