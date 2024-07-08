@@ -237,7 +237,8 @@ for raw_index in task_ID_list
     end
 
     # Save the results to file
-    f = open(output_path * "_" * string(index) * ".json","w")
+    #f = open(output_path * "_" * string(index) * ".json","w")
+    f = open(output_path * "_" * string(raw_index) * ".json","w")
     JSON.print(f, JSON.json(experiment_results))
     close(f)
 
