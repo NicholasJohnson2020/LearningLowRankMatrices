@@ -15,11 +15,11 @@ function admm(A, k, Y, lambda; gamma=0.01, step_size=10,
         Psi = Psi_iterate
 
         obj = norm(S .* (U * V' - A)) ^ 2
-        obj += lambda * tr(Y' * (Matrix(I, n, n) - P) * Y)
+        obj += lambda * tr(Y' * (Y - P * Y))
         obj += gamma * (norm(U) ^ 2 + norm(V) ^ 2)
-        lag = obj + tr(Phi' * (Matrix(I, n, n) - P) * Z)
+        lag = obj + tr(Phi' * (Z - P * Z))
         lag += tr(Psi' * (Z - U))
-        lag += rho_1 / 2 * norm((Matrix(I, n, n) - P) * Z) ^ 2
+        lag += rho_1 / 2 * norm(Z - P * Z) ^ 2
         lag += rho_2 / 2 * norm(Z - U) ^ 2
 
         return obj, lag
