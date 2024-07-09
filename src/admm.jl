@@ -14,7 +14,10 @@ function admm(A, k, Y, lambda; gamma=0.01, step_size=10,
         Phi = Phi_iterate
         Psi = Psi_iterate
 
-        obj = norm(S .* (U * V' - A)) ^ 2
+        obj = 0
+        for (i, j) in zip(iIndex, jIndex)
+            obj += (U[i, :]' * V[j, :] - A[i, j]) ^ 2
+        end
         obj += lambda * tr(Y' * (Y - P * Y))
         obj += gamma * (norm(U) ^ 2 + norm(V) ^ 2)
         lag = obj + tr(Phi' * (Z - P * Z))
@@ -37,6 +40,7 @@ function admm(A, k, Y, lambda; gamma=0.01, step_size=10,
     @assert size(Y)[1] == n
 
     S = sparse(findnz(A)...)
+    iIndex, jIndex, vals = findnz(A)
 
     if initialization == "exact"
         L, sigma, R = tsvd(A, k)
