@@ -57,8 +57,9 @@ start_time_global = now()
 
 # Main loop to execute experiments
 #K = [3, 4, 5, 6, 7, 8, 9, 10]
-STEP_SIZES = [0.001, 0.01, 0.1, 0.5, 1, 5, 10, 20,
-              50, 75, 100, 150, 200, 500, 1000, 2000]
+#STEP_SIZES = [0.001, 0.01, 0.1, 0.5, 1, 5, 10, 20,
+#              50, 75, 100, 150, 200, 500, 1000, 2000]
+STEP_SIZES = [0.001, 0.01, 0.1, 0.5, 1, 5, 10, 20]
 
 #task_ID_list = collect((task_ID_input+1):num_tasks_input:length(K))
 task_ID_list = collect((task_ID_input+1):num_tasks_input:length(STEP_SIZES))
@@ -112,6 +113,9 @@ for raw_index in task_ID_list
         experiment_results["Psi_residual_hist"] = []
         experiment_results["obj_hist"] = []
         experiment_results["augL_hist"] = []
+        experiment_results["U_sol"] = []
+        experiment_results["V_sol"] = []
+        experiment_results["P_sol"] = []
     end
 
     start_time = now()
@@ -140,7 +144,7 @@ for raw_index in task_ID_list
         test_val = convert(Vector{Int64}, test_val)
 
         #gamma = 1 / length(train_val)
-        gamma = 1 / (100 * n * m)
+        gamma = 1 / m
         #lambda = (1 / length(train_val)) ^ 2
         lambda = 0
 
@@ -172,6 +176,9 @@ for raw_index in task_ID_list
 
             append!(experiment_results["update_times"], [output[7][3]])
             append!(experiment_results["step_size"], step_size)
+            append!(experiment_results["U_sol"], [U_fitted])
+            append!(experiment_results["V_sol"], [V_fitted])
+            append!(experiment_results["P_sol"], [P_fitted])
         elseif method_name == "admm_sub"
             step_size = 10
             trial_start = now()
