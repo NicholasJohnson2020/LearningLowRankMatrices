@@ -99,7 +99,9 @@ for raw_index in task_ID_list
     experiment_results["train_size"] = []
     experiment_results["test_size"] = []
     experiment_results["in_reconstruction_error"] = []
+    experiment_results["in_error"] = []
     experiment_results["out_reconstruction_error"] = []
+    experiment_results["out_error"] = []
     experiment_results["gamma"] = []
     experiment_results["lambda"] = []
     experiment_results["execution_time"] = []
@@ -116,6 +118,7 @@ for raw_index in task_ID_list
         experiment_results["U_sol"] = []
         experiment_results["V_sol"] = []
         experiment_results["P_sol"] = []
+        experiment_results["Z_sol"] = []
     end
 
     start_time = now()
@@ -144,7 +147,7 @@ for raw_index in task_ID_list
         test_val = convert(Vector{Int64}, test_val)
 
         #gamma = 1 / length(train_val)
-        gamma = 1 / m
+        gamma = 1 / (m * n)
         #lambda = (1 / length(train_val)) ^ 2
         lambda = 0
 
@@ -179,6 +182,7 @@ for raw_index in task_ID_list
             append!(experiment_results["U_sol"], [U_fitted])
             append!(experiment_results["V_sol"], [V_fitted])
             append!(experiment_results["P_sol"], [P_fitted])
+            append!(experiment_results["Z_sol"], [Z_fitted])
         elseif method_name == "admm_sub"
             step_size = 10
             trial_start = now()
@@ -244,7 +248,9 @@ for raw_index in task_ID_list
         append!(experiment_results["train_size"], n_in)
         append!(experiment_results["test_size"], n_out)
         append!(experiment_results["in_reconstruction_error"], in_error)
+        append!(experiment_results["in_error"], sum(in_sample_error))
         append!(experiment_results["out_reconstruction_error"], out_error)
+        append!(experiment_results["out_error"], sum(out_sample_error))
         append!(experiment_results["gamma"], gamma)
         append!(experiment_results["lambda"], lambda)
         append!(experiment_results["execution_time"], elapsed_time)
