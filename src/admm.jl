@@ -53,8 +53,11 @@ function admm(A, k, Y, lambda; gamma=0.01, step_size=10,
     Z_iterate = U_iterate
     P_iterate = SymLowRankMat(L)
 
-    Phi_iterate = ones(Float64, n, k)
-    Psi_iterate = ones(Float64, n, k)
+    #Phi_iterate = ones(Float64, n, k)
+    #Psi_iterate = ones(Float64, n, k)
+
+    Phi_iterate = rand(Uniform(0, 1), n, k)
+    Psi_iterate = rand(Uniform(0, 1), n, k)
 
     Phi_residual_hist = []
     Psi_residual_hist = []
