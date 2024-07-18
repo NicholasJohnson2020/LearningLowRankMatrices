@@ -119,6 +119,8 @@ for raw_index in task_ID_list
         experiment_results["V_sol"] = []
         experiment_results["P_sol"] = []
         experiment_results["Z_sol"] = []
+        experiment_results["Phi_sol"] = []
+        experiment_results["Psi_sol"] = []
     end
 
     start_time = now()
@@ -165,6 +167,8 @@ for raw_index in task_ID_list
             V_fitted = output[2]
             P_fitted = output[3]
             Z_fitted = output[4]
+            Phi_iterate = output[5]
+            Psi_iterate = output[6]
 
             Phi_residual = Z_fitted - P_fitted * Z_fitted
             Psi_residual = Z_fitted - U_fitted
@@ -183,6 +187,8 @@ for raw_index in task_ID_list
             append!(experiment_results["V_sol"], [V_fitted])
             append!(experiment_results["P_sol"], [P_fitted])
             append!(experiment_results["Z_sol"], [Z_fitted])
+            append!(experiment_results["Phi_sol"], [Phi_iterate])
+            append!(experiment_results["Psi_sol"], [Psi_iterate])
         elseif method_name == "admm_sub"
             step_size = 10
             trial_start = now()
