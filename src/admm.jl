@@ -5,29 +5,6 @@ function admm(A, k, Y, lambda; gamma=0.01, step_size=10,
     @assert initialization in ["exact", "approximate"]
     @assert P_update in ["exact", "sub_sketch"]
 
-    function computeAugL()
-
-        U = U_iterate
-        V = V_iterate
-        P = P_iterate
-        Z = Z_iterate
-        Phi = Phi_iterate
-        Psi = Psi_iterate
-
-        obj = 0
-        for (i, j) in zip(iIndex, jIndex)
-            obj += (U[i, :]' * V[j, :] - A[i, j]) ^ 2
-        end
-        obj += lambda * tr(Y' * (Y - P * Y))
-        obj += gamma * (norm(U) ^ 2 + norm(V) ^ 2)
-        lag = obj + tr(Phi' * (Z - P * Z))
-        lag += tr(Psi' * (Z - U))
-        lag += rho_1 / 2 * norm(Z - P * Z) ^ 2
-        lag += rho_2 / 2 * norm(Z - U) ^ 2
-
-        return obj, lag
-    end
-
     opts = LRAOptions()
     opts.sketch = :sub
 
@@ -53,20 +30,11 @@ function admm(A, k, Y, lambda; gamma=0.01, step_size=10,
     Z_iterate = U_iterate
     P_iterate = SymLowRankMat(L)
 
-    #Phi_iterate = ones(Float64, n, k)
-    #Psi_iterate = ones(Float64, n, k)
-
-    Phi_iterate = rand(Uniform(0, 1), n, k)
-    Psi_iterate = rand(Uniform(0, 1), n, k)
+    Phi_iterate = ones(Float64, n, k)
+    Psi_iterate = ones(Float64, n, k)
 
     Phi_residual_hist = []
     Psi_residual_hist = []
-    obj_hist = []
-    augL_hist = []
-    obj, augL = computeAugL()
-    append!(obj_hist, obj)
-    append!(augL_hist, augL)
-
 
     update_time = Dict("U" => 0, "P" => 0, "V" => 0, "Z" => 0)
 
@@ -83,10 +51,6 @@ function admm(A, k, Y, lambda; gamma=0.01, step_size=10,
         close = now()
         update_time["U"] += Dates.value(close - start)
 
-        obj, augL = computeAugL()
-        append!(obj_hist, obj)
-        append!(augL_hist, augL)
-
         # Perform P Update
         start = now()
         factor_1 = [lambda * Y rho_1 / 2 * Z_iterate Phi_iterate / 2 Z_iterate / 2]
@@ -101,10 +65,6 @@ function admm(A, k, Y, lambda; gamma=0.01, step_size=10,
         close = now()
         update_time["P"] += Dates.value(close - start)
 
-        obj, augL = computeAugL()
-        append!(obj_hist, obj)
-        append!(augL_hist, augL)
-
         # Perform V Update
         start = now()
         Threads.@threads for j=1:m
@@ -115,10 +75,6 @@ function admm(A, k, Y, lambda; gamma=0.01, step_size=10,
         close = now()
         update_time["V"] += Dates.value(close - start)
 
-        obj, augL = computeAugL()
-        append!(obj_hist, obj)
-        append!(augL_hist, augL)
-
         # Perform Z Update
         start = now()
         temp = Phi_iterate + rho_1 * U_iterate - (rho_1 / rho_2) * Psi_iterate
@@ -127,25 +83,13 @@ function admm(A, k, Y, lambda; gamma=0.01, step_size=10,
         close = now()
         update_time["Z"] += Dates.value(close - start)
 
-        obj, augL = computeAugL()
-        append!(obj_hist, obj)
-        append!(augL_hist, augL)
-
         # Perform Sigma1 Update
         Phi_residual = Z_iterate - P_iterate * Z_iterate
         Phi_iterate += rho_1 * Phi_residual
 
-        obj, augL = computeAugL()
-        append!(obj_hist, obj)
-        append!(augL_hist, augL)
-
         # Perform Sigma2 Update
         Psi_residual = Z_iterate - U_iterate
         Psi_iterate += rho_2 * Psi_residual
-
-        obj, augL = computeAugL()
-        append!(obj_hist, obj)
-        append!(augL_hist, augL)
 
         append!(Phi_residual_hist, norm(Phi_residual)^2)
         append!(Psi_residual_hist, norm(Psi_residual)^2)
@@ -159,7 +103,7 @@ function admm(A, k, Y, lambda; gamma=0.01, step_size=10,
 
     return U_iterate, V_iterate, P_iterate, Z_iterate, Phi_iterate,
            Psi_iterate, (0, 0, update_time),
-           (obj_hist, augL_hist, Phi_residual_hist, Psi_residual_hist)
+           (Phi_residual_hist, Psi_residual_hist)
 
 end
 
