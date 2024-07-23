@@ -82,8 +82,7 @@ for (index, k) in enumerate(K)
     experiment_results["D"] = d
     experiment_results["frac"] = missing_frac
 
-    #experiment_results["Trials"] = NUM_TRIALS
-    NUM_TRIALS = 1
+    experiment_results["Trials"] = NUM_TRIALS
 
     experiment_results["train_size"] = []
     experiment_results["test_size"] = []
@@ -135,15 +134,14 @@ for (index, k) in enumerate(K)
         test_j = convert(Vector{Int64}, test_j)
         test_val = convert(Vector{Int64}, test_val)
 
-        #gamma = 1 / length(train_val)
-        gamma = 1 / (m * n)
-        #lambda = (1 / length(train_val)) ^ 2
-        lambda = 0
+        gamma = 1 / length(train_val)
+        #gamma = 1 / (m * n)
+        lambda = (1 / length(train_val)
+        #lambda = 0
 
         # Switch to execute the specified method
         if method_name == "admm_exact"
-            #step_size = 0.01
-            step_size = STEP_SIZES[raw_index]
+            step_size = 10
             trial_start = now()
             output = admm(A_observed, k_target, Y, lambda, gamma=gamma,
                           step_size=step_size, max_iteration=20,
