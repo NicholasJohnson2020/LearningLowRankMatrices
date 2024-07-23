@@ -56,22 +56,12 @@ NUM_TRIALS = netflix_data["Trials"]
 start_time_global = now()
 
 # Main loop to execute experiments
-#K = [3, 4, 5, 6, 7, 8, 9, 10]
-#STEP_SIZES = [0.001, 0.01, 0.1, 0.5, 1, 5, 10, 20,
-#              50, 75, 100, 150, 200, 500, 1000, 2000]
-STEP_SIZES = [0.001, 0.01, 0.1, 0.5, 1, 5, 10, 20]
+K = [3, 4, 5, 6, 7, 8, 9, 10]
 
-#task_ID_list = collect((task_ID_input+1):num_tasks_input:length(K))
-task_ID_list = collect((task_ID_input+1):num_tasks_input:length(STEP_SIZES))
+task_ID_list = collect((task_ID_input+1):num_tasks_input:length(K))
 
 Y = unserialize_matrix(netflix_data["Y"])
-#for (index, k) in enumerate(K)
-for raw_index in task_ID_list
-
-    #k = K[raw_index]
-    #k = 3
-    #index = raw_index
-    index = 1
+for (index, k) in enumerate(K)
 
     global netflix_data
     global param_dict
@@ -79,8 +69,7 @@ for raw_index in task_ID_list
     # Load experiment specific data
     n = param_dict[string(index)]["N"]
     m = param_dict[string(index)]["M"]
-    #k_target = param_dict[string(index)]["K"]
-    k_target = 3
+    k_target = param_dict[string(index)]["K"]
     d = param_dict[string(index)]["D"]
     missing_frac = param_dict[string(index)]["frac"]
 
@@ -113,8 +102,6 @@ for raw_index in task_ID_list
         experiment_results["Psi_residual"] = []
         experiment_results["Phi_residual_hist"] = []
         experiment_results["Psi_residual_hist"] = []
-        experiment_results["obj_hist"] = []
-        experiment_results["augL_hist"] = []
         experiment_results["U_sol"] = []
         experiment_results["V_sol"] = []
         experiment_results["P_sol"] = []
@@ -176,10 +163,8 @@ for raw_index in task_ID_list
             append!(experiment_results["Phi_residual"], norm(Phi_residual)^2)
             append!(experiment_results["Psi_residual"], norm(Psi_residual)^2)
 
-            append!(experiment_results["Phi_residual_hist"], [output[8][3]])
-            append!(experiment_results["Psi_residual_hist"], [output[8][4]])
-            append!(experiment_results["obj_hist"], [output[8][1]])
-            append!(experiment_results["augL_hist"], [output[8][2]])
+            append!(experiment_results["Phi_residual_hist"], [output[8][1]])
+            append!(experiment_results["Psi_residual_hist"], [output[8][2]])
 
             append!(experiment_results["update_times"], [output[7][3]])
             append!(experiment_results["step_size"], step_size)
@@ -266,8 +251,7 @@ for raw_index in task_ID_list
     end
 
     # Save the results to file
-    #f = open(output_path * "_" * string(index) * ".json","w")
-    f = open(output_path * "_" * string(raw_index) * ".json","w")
+    f = open(output_path * "_" * string(index) * ".json","w")
     JSON.print(f, JSON.json(experiment_results))
     close(f)
 
