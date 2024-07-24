@@ -136,7 +136,7 @@ for (index, k) in enumerate(K)
 
         gamma = 1 / length(train_val)
         #gamma = 1 / (m * n)
-        lambda = (1 / length(train_val)
+        lambda = 1 / length(train_val)
         #lambda = 0
 
         # Switch to execute the specified method
