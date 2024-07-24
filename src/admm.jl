@@ -33,9 +33,6 @@ function admm(A, k, Y, lambda; gamma=0.01, step_size=10,
     Phi_iterate = ones(Float64, n, k)
     Psi_iterate = ones(Float64, n, k)
 
-    Phi_residual_hist = []
-    Psi_residual_hist = []
-
     update_time = Dict("U" => 0, "P" => 0, "V" => 0, "Z" => 0)
 
     for iteration=1:max_iteration
@@ -91,9 +88,6 @@ function admm(A, k, Y, lambda; gamma=0.01, step_size=10,
         Psi_residual = Z_iterate - U_iterate
         Psi_iterate += rho_2 * Psi_residual
 
-        append!(Phi_residual_hist, norm(Phi_residual)^2)
-        append!(Psi_residual_hist, norm(Psi_residual)^2)
-
         # Check for termination
         if max(norm(Phi_residual)^2, norm(Psi_residual)^2) < residual_threshold
             break
@@ -102,8 +96,7 @@ function admm(A, k, Y, lambda; gamma=0.01, step_size=10,
     end
 
     return U_iterate, V_iterate, P_iterate, Z_iterate, Phi_iterate,
-           Psi_iterate, (0, 0, update_time),
-           (Phi_residual_hist, Psi_residual_hist)
+           Psi_iterate, (0, 0, update_time)
 
 end
 

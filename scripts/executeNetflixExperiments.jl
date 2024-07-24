@@ -82,7 +82,8 @@ for (index, k) in enumerate(K)
     experiment_results["D"] = d
     experiment_results["frac"] = missing_frac
 
-    experiment_results["Trials"] = NUM_TRIALS
+    #experiment_results["Trials"] = NUM_TRIALS
+    NUM_TRIALS = 1
 
     experiment_results["train_size"] = []
     experiment_results["test_size"] = []
@@ -99,14 +100,6 @@ for (index, k) in enumerate(K)
         experiment_results["step_size"] = []
         experiment_results["Phi_residual"] = []
         experiment_results["Psi_residual"] = []
-        experiment_results["Phi_residual_hist"] = []
-        experiment_results["Psi_residual_hist"] = []
-        experiment_results["U_sol"] = []
-        experiment_results["V_sol"] = []
-        experiment_results["P_sol"] = []
-        experiment_results["Z_sol"] = []
-        experiment_results["Phi_sol"] = []
-        experiment_results["Psi_sol"] = []
     end
 
     start_time = now()
@@ -136,8 +129,8 @@ for (index, k) in enumerate(K)
 
         gamma = 1 / length(train_val)
         #gamma = 1 / (m * n)
-        lambda = 1 / length(train_val)
-        #lambda = 0
+        #lambda = 1 / length(train_val)
+        lambda = 0
 
         # Switch to execute the specified method
         if method_name == "admm_exact"
@@ -161,17 +154,8 @@ for (index, k) in enumerate(K)
             append!(experiment_results["Phi_residual"], norm(Phi_residual)^2)
             append!(experiment_results["Psi_residual"], norm(Psi_residual)^2)
 
-            append!(experiment_results["Phi_residual_hist"], [output[8][1]])
-            append!(experiment_results["Psi_residual_hist"], [output[8][2]])
-
             append!(experiment_results["update_times"], [output[7][3]])
             append!(experiment_results["step_size"], step_size)
-            append!(experiment_results["U_sol"], [U_fitted])
-            append!(experiment_results["V_sol"], [V_fitted])
-            append!(experiment_results["P_sol"], [P_fitted])
-            append!(experiment_results["Z_sol"], [Z_fitted])
-            append!(experiment_results["Phi_sol"], [Phi_iterate])
-            append!(experiment_results["Psi_sol"], [Psi_iterate])
         elseif method_name == "admm_sub"
             step_size = 10
             trial_start = now()
