@@ -82,8 +82,8 @@ for (index, k) in enumerate(K)
     experiment_results["D"] = d
     experiment_results["frac"] = missing_frac
 
-    #experiment_results["Trials"] = NUM_TRIALS
-    NUM_TRIALS = 1
+    experiment_results["Trials"] = NUM_TRIALS
+    #NUM_TRIALS = 1
 
     experiment_results["train_size"] = []
     experiment_results["test_size"] = []
@@ -129,8 +129,8 @@ for (index, k) in enumerate(K)
 
         gamma = 1 / sqrt(length(train_val))
         #gamma = 1 / (m * n)
-        #lambda = 1 / length(train_val)
-        lambda = 0
+        lambda = 1 / length(train_val)
+        #lambda = 0
 
         # Switch to execute the specified method
         if method_name == "admm_exact"
