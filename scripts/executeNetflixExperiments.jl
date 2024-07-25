@@ -127,8 +127,8 @@ for (index, k) in enumerate(K)
         test_j = convert(Vector{Int64}, test_j)
         test_val = convert(Vector{Int64}, test_val)
 
-        #gamma = 1 / length(train_val)
-        gamma = 1 / (m * n)
+        gamma = 1 / sqrt(length(train_val))
+        #gamma = 1 / (m * n)
         #lambda = 1 / length(train_val)
         lambda = 0
 
