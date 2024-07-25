@@ -61,10 +61,12 @@ K = [3, 4, 5, 6, 7, 8, 9, 10]
 task_ID_list = collect((task_ID_input+1):num_tasks_input:length(K))
 
 Y = unserialize_matrix(netflix_data["Y"])
-for (index, k) in enumerate(K)
+for index in task_ID_list
 
     global netflix_data
     global param_dict
+
+    k = K[index]
 
     # Load experiment specific data
     n = param_dict[string(index)]["N"]
