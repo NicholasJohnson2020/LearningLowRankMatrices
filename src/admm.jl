@@ -3,9 +3,9 @@ function admm(A, k, Y, lambda; gamma=0.01, step_size=10,
               initialization="approximate", P_update="exact")
     """
     This function computes a high quality feasible solution to the low rank
-    matrix learning under partial observations (problem (8) in the accompanying
-    paper) by executing a mixed-projection alternating direction method of
-    multipliers algorithm.
+    matrix learning under partial observations problem (problem (8) in the
+    accompanying paper) by executing a mixed-projection alternating direction
+    method of multipliers algorithm.
 
     :param A: A n-by-m partially observed matrix. Unobserved values should be
               entered as zero.

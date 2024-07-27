@@ -1,5 +1,31 @@
 function computeObjectiveGradient(U, V, S, A, Y, lambda, gamma;
                                   singular_value_threshold=1e-6)
+    """
+    This function evaluates the predictive low rank matrix learning under
+    partial observations problem objective and evaluates its partial gradients
+    when alpha is minimized out and the low-rank matrix is factorized as
+    X = U * V^T.
+
+    :param U: An n-by-k matrix corresponding to the U factor of X.
+    :param V: An m-by-k matrix corresponding to the V factor of X.
+    :param S: An n-by-m binary matrix corresponding to the pattern of revealed
+              entries in the input matrix A.
+    :param A: A n-by-m partially observed matrix (unobserved values should be
+              entered as zero).
+    :param Y: A n-by-d side information matrix.
+    :param lambda: A parameter to weight the emphasis placed on finding a
+                   reconstruction that is predictive of the side information
+                   in the objective function (Float64).
+    :param gamma: A regularization parameter (Float64).
+    :param singular_value_threshold: A threshold parameter below which singular
+                                     values are taken to be zero when computing
+                                     a matrix inverse (Float64).
+
+    :return: This function outputs two values. (1) The objective value. (2) A
+             tuple of length 2 where the first component is the partial gradient
+             with respect to U and the second component is the partial with
+             respect to V.
+    """
 
     X = U * V'
     (n, m) = size(X)
@@ -32,6 +58,41 @@ end
 function scaledGD(A, k, Y, lambda; gamma=0.01, max_iteration=1000,
                   termination_criteria="rel_improvement", min_improvement=0.001,
                   step_size=0.1)
+    """
+    This function computes a feasible solution to the predictive low rank
+    matrix learning under partial observations problem by employing the
+    ScaledGD algorithm as described in "Accelerating Ill-Conditioned Low-Rank
+    Matrix Estimation via Scaled Gradient Descent" (Tong et al. 2021).
+
+    :param A: A n-by-m partially observed matrix. Unobserved values should be
+              entered as zero.
+    :param k: A specified target rank (Int64).
+    :param Y: A n-by-d side information matrix.
+    :param lambda: A parameter to weight the emphasis placed on finding a
+                   reconstruction that is predictive of the side information
+                   in the objective function (Float64).
+    :param gamma: A regularization parameter (Float64).
+    :param max_iteration: The number of iterations of the main optimization
+                          loop to execute (Int64).
+    :param termination_criteria: String that must take value either
+                                 "rel_improvement" or "iteration_count". If
+                                 "rel_improvement", the algorithm will terminate
+                                 if the fractional decrease in the objective
+                                 value after an iteration is less than
+                                 min_improvement. If set to "iteration_count"
+                                 the algorithm will terminate after
+                                 max_iteration steps (String).
+    :param min_improvement: The minimal fractional decrease in the objective
+                            value required for the procedure to continue
+                            iterating when termination_criteria is set to
+                            "rel_improvement".
+    :param step_size: The step_size parameter to use in the algorithm (Float64).
+
+    :return: This function returns four values. (1) The n-by-k final matrix U,
+             (2) the m-by-k final matrix V, (3) the objective value achieved by
+             the return solution and (4) the number of iterations executed when
+             performing ScaledGD.
+    """
 
     @assert termination_criteria in ["iteration_count", "rel_improvement"]
 
@@ -80,133 +141,4 @@ function scaledGD(A, k, Y, lambda; gamma=0.01, max_iteration=1000,
 
 end
 
-function vanillaGD(A, k, Y, lambda; gamma=0.01, max_iteration=1000,
-                  termination_criteria="rel_improvement", min_improvement=0.001,
-                  step_size=0.01)
-
-    @assert termination_criteria in ["iteration_count", "rel_improvement"]
-
-    (n, m) = size(A)
-
-    S = zeros(n, m)
-    for (i, j, value) in zip(findnz(A)...)
-        S[i, j] = 1
-    end
-    S = sparse(S)
-
-    L, sigma, R = tsvd(A, k)
-    step_normalization = sigma[1]
-
-    U_iterate = L * Diagonal(sqrt.(sigma))
-    V_iterate = R * Diagonal(sqrt.(sigma))
-
-    old_objective = 0
-    new_objective = 0
-    iter_count = 0
-
-    # Main loop
-    for iteration=1:max_iteration
-
-        iter_count += 1
-        new_objective, gradients = computeObjectiveGradient(U_iterate,
-                                                            V_iterate, S,
-                                                            A, Y, lambda, gamma)
-
-        # Update the U and V iterates
-        U_iterate = U_iterate - step_size / step_normalization * gradients[1]
-        V_iterate = V_iterate - step_size / step_normalization * gradients[2]
-
-        if (termination_criteria == "rel_improvement") & (old_objective != 0)
-            if (old_objective - new_objective) / old_objective < min_improvement
-                break
-            end
-        end
-        old_objective = new_objective
-    end
-
-    return U_iterate, V_iterate, new_objective, iter_count
-
-end
-
-function cross_validate(method, A, k, Y, lambda, gamma; num_samples=10,
-                        train_frac=0.7, candidate_vals=[10, 1, 0.1, 0.01],
-                        singular_value_threshold=1e-6)
-
-    (n, m) = size(A)
-
-    alpha = (1-sqrt(train_frac))
-    val_n = Int(floor(n * alpha))
-    train_n = n - val_n
-    val_m = Int(floor(m * alpha))
-    train_m = m - val_m
-
-    param_scores = Dict()
-    for step_size in candidate_vals
-        param_scores[step_size] = 0
-    end
-
-    for trial=1:num_samples
-
-        row_permutation = randperm(n)
-        col_permutation = randperm(m)
-
-        val_row_ind = row_permutation[1:val_n]
-        train_row_ind = row_permutation[(val_n+1):end]
-        val_col_ind = col_permutation[1:val_m]
-        train_col_ind = col_permutation[(val_m+1):end]
-
-        A_val = A[val_row_ind, val_col_ind]
-        A_train = A[train_row_ind, train_col_ind]
-        Y_train = Y[train_row_ind, :]
-        LL_block_data = A[train_row_ind, val_col_ind]
-        UR_block_data = A[val_row_ind, train_col_ind]
-
-        while norm(A_val) ^ 2 < 1e-4
-            row_permutation = randperm(n)
-            col_permutation = randperm(m)
-
-            val_row_ind = row_permutation[1:val_n]
-            train_row_ind = row_permutation[(val_n+1):end]
-            val_col_ind = col_permutation[1:val_m]
-            train_col_ind = col_permutation[(val_m+1):end]
-
-            A_val = A[val_row_ind, val_col_ind]
-            A_train = A[train_row_ind, train_col_ind]
-            Y_train = Y[train_row_ind, :]
-            LL_block_data = A[train_row_ind, val_col_ind]
-            UR_block_data = A[val_row_ind, train_col_ind]
-        end
-
-        for step_size in candidate_vals
-
-            output = method(A_train, k, Y_train, lambda, gamma=gamma,
-                            step_size=step_size)
-            X_fitted = output[1] * output[2]'
-            L, Sigma, R = tsvd(X_fitted, k)
-            for i=1:k
-                if Sigma[i] > singular_value_threshold
-                    Sigma[i] = 1 / Sigma[i]
-                else
-                    Sigma[i] = 0
-                end
-            end
-            X_inv = L * Diagonal(Sigma) * R'
-            val_estimate = UR_block_data * X_inv' * LL_block_data
-            val_error = norm(val_estimate - A_val) ^2 / norm(A_val) ^ 2
-
-            param_scores[step_size] += val_error / num_samples
-        end
-    end
-
-    best_score = 1e9
-    best_param = ()
-    for (param, score) in param_scores
-        if score < best_score
-            best_score = score
-            best_param = param
-        end
-    end
-
-    return best_param, param_scores
-
-end;
+;

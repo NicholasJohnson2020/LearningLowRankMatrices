@@ -1,9 +1,5 @@
 using SparseArrays, LinearAlgebra, Random, Distributions, TSVD, LowRankApprox
-using JuMP, Mosek, MosekTools
-using MatrixImpute
-using PyCall
-using Distributed
-using Dates, JSON
+using MatrixImpute, PyCall, Distributed
 
 #using Conda
 #Conda.pip_interop(true)
@@ -13,10 +9,7 @@ fancyImpute = pyimport("fancyimpute")
 
 include("src/lowRankMatrix.jl")
 include("src/scaledGD.jl")
-include("src/altMin.jl")
 include("src/admm.jl")
-include("src/admmV2.jl")
-include("src/perspectiveFormulations.jl")
 include("src/benchmarkMethods.jl")
 include("src/utils.jl")
 ;
