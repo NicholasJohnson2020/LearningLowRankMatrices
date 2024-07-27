@@ -1,5 +1,7 @@
 include("../lowRankMatrixLearning.jl")
 
+using Dates, JSON
+
 function unserialize_matrix(mat)
     """
     This function unserializes an array of arrays into a 2-dimensional matrix.
@@ -85,8 +87,6 @@ for index in task_ID_list
     experiment_results["frac"] = missing_frac
 
     experiment_results["Trials"] = NUM_TRIALS
-    #NUM_TRIALS = 1
-
     experiment_results["train_size"] = []
     experiment_results["test_size"] = []
     experiment_results["in_reconstruction_error"] = []
@@ -130,9 +130,7 @@ for index in task_ID_list
         test_val = convert(Vector{Int64}, test_val)
 
         gamma = 1 / sqrt(length(train_val))
-        #gamma = 1 / (m * n)
         lambda = 1 / length(train_val)
-        #lambda = 0
 
         # Switch to execute the specified method
         if method_name == "admm_exact"

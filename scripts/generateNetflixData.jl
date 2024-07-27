@@ -1,7 +1,21 @@
 using SparseArrays, NPZ, JSON, StatsBase, Random, Dates, Distributions
 
 function filterData(Y);
-    # filter Y to only keep indices that have values across all columns
+    """
+    This function filters out movies that do not have all side information
+    present and filters out users that do not have at least 5 ratings across
+    the retained movies.
+
+    :param Y: A n-by-d matrix of side information.
+
+    :return: This function returns four values. (1) A list of row indices of the
+             retained matrix entries, (2) a list of column indices of the
+             retained matrix entries, (3) a list of values of the retained
+             matrix entries and (4) the filtered n-by-d matrix of side
+             information.
+    """
+
+    # Filter Y to only keep indices that have values across all columns
     good_indexes = [x[1] for x in findall(==(0), sum(Y .== 0, dims=2))]
     Y = Y[good_indexes, :]
 
@@ -75,6 +89,23 @@ end;
 
 
 function performMasking(i_data, j_data, val_data, test_frac);
+    """
+    This function creates a random partition of training and test data.
+
+    :param i_data: A list of row indices of the preprocessed matrix entries.
+    :param j_data: A list of column indices of the preprocessed matrix entries.
+    :param val_data: A list of values of the preprocessed matrix entries.
+    :param test_frac: The fraction of data to be used as test data (Float64).
+
+    :return: This function returns two values. (1) A tuple of length 3 where
+             the first entry is a list of row indices for the training data,
+             the second entry is a list of column indices for the training data
+             and the third is a list of values for the training data. (2) A
+             tuple of length 3 where the first entry is a list of row indices
+             for the test data, the second entry is a list of column indices
+             for the test data and the third is a list of values for the test
+             data.
+    """
 
     num_examples = length(i_data)
 

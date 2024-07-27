@@ -2,9 +2,16 @@ using JSON, LinearAlgebra, Statistics, DataFrames, CSV
 
 function processData(input_path, method_name)
    """
-   This function loads raw experiment output data and processes it into a
-   dataframe.
+   This function loads raw experiment output data as a JSON and processes it
+   into a dataframe.
+
+   :param input_path: File path to raw experiment output data.
+   :param method_name: Method name of raw experiment data to be processed.
+
+   :return: A dataframe of the processed experiment data.
    """
+
+   # Define the dataframe columns
    df = DataFrame(N=Int64[], M=Int64[], K=Int64[], D=Int64[],
                   missing_frac=Float64[], noise_param=Float64[],
                   gamma=Float64[], lambda=Float64[],
@@ -17,8 +24,8 @@ function processData(input_path, method_name)
    successful_entries = 0
 
    root_path = input_path * method_name * "/"
-
    file_paths = readdir(root_path, join=true)
+
    # Iterate over all files in the input directory
    for file_name in file_paths
 
@@ -26,6 +33,7 @@ function processData(input_path, method_name)
          continue
       end
 
+      # Load the data from the filesystem
       exp_data = Dict()
       open(file_name, "r") do f
          dicttxt = JSON.read(f, String)

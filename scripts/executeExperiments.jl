@@ -1,5 +1,7 @@
 include("../lowRankMatrixLearning.jl")
 
+using Dates, JSON
+
 function unserialize_matrix(mat)
     """
     This function unserializes an array of arrays into a 2-dimensional matrix.
@@ -18,7 +20,6 @@ function unserialize_matrix(mat)
     return output
 end;
 
-cross_validate_step_size = false
 cv_samples = 5
 
 method_name = ARGS[1]
@@ -27,9 +28,8 @@ output_path = ARGS[3] * method_name * "/"
 task_ID_input = parse(Int64, ARGS[4])
 num_tasks_input = parse(Int64, ARGS[5])
 
-valid_methods = ["ScaledGD", "VanillaGD", "admm_exact",
-                 "admm_sub", "admmV0", "fastImpute",
-                 "softImpute", "SVD", "MF"]
+valid_methods = ["ScaledGD", "admm_exact", "admm_sub", "fastImpute",
+                 "softImpute", "SVD"]
 
 @assert method_name in valid_methods
 
@@ -127,12 +127,6 @@ for task_ID in task_ID_list
         # Switch to execute the specified method
         if method_name == "ScaledGD"
             step_size = 1
-            if cross_validate_step_size
-                cv_output = cross_validate(scaledGD, A_observed, k_target, Y,
-                                           lambda, gamma,
-                                           num_samples=cv_samples)
-                step_size = cv_output[1]
-            end
             trial_start = now()
             U_fitted, V_fitted, _, iterations = scaledGD(A_observed, k_target,
                                                          Y, lambda, gamma=gamma,
@@ -142,31 +136,8 @@ for task_ID in task_ID_list
             X_fitted = U_fitted * V_fitted'
             append!(experiment_results["iterations"], iterations)
             append!(experiment_results["step_size"], step_size)
-        elseif method_name == "VanillaGD"
-            step_size = 1
-            if cross_validate_step_size
-                cv_output = cross_validate(vanillaGD, A_observed, k_target, Y,
-                                           lambda, gamma,
-                                           num_samples=cv_samples)
-                step_size = cv_output[1]
-            end
-            trial_start = now()
-            start = now()
-            U_fitted, V_fitted, _, iterations = vanillaGD(A_observed, k_target,
-                                                          Y, lambda, gamma=gamma,
-                                                          min_improvement=1e-3,
-                                                          step_size=step_size)
-            trial_end_time = now()
-            X_fitted = U_fitted * V_fitted'
-            append!(experiment_results["iterations"], iterations)
-            append!(experiment_results["step_size"], step_size)
         elseif method_name == "admm_exact"
             step_size = 10
-            if cross_validate_step_size
-                cv_output = cross_validate(admmV0, A_observed, k_target, Y,
-                                           lambda, gamma)
-                step_size = cv_output[1]
-            end
             trial_start = now()
             output = admm(A_observed, k_target, Y, lambda, gamma=gamma,
                           step_size=step_size, max_iteration=20,
@@ -177,30 +148,10 @@ for task_ID in task_ID_list
             append!(experiment_results["step_size"], step_size)
         elseif method_name == "admm_sub"
             step_size = 10
-            if cross_validate_step_size
-                cv_output = cross_validate(admmV0, A_observed, k_target, Y,
-                                           lambda, gamma)
-                step_size = cv_output[1]
-            end
             trial_start = now()
             output = admm(A_observed, k_target, Y, lambda, gamma=gamma,
                           step_size=step_size, max_iteration=20,
                           residual_threshold=1e-4, P_update="sub_sketch")
-            trial_end_time = now()
-            X_fitted = output[1] * output[2]'
-            append!(experiment_results["update_times"], [output[7][3]])
-            append!(experiment_results["step_size"], step_size)
-        elseif method_name == "admmV0"
-            step_size = 10
-            if cross_validate_step_size
-                cv_output = cross_validate(admm, A_observed, k_target, Y,
-                                           lambda, gamma)
-                step_size = cv_output[1]
-            end
-            trial_start = now()
-            output = admmV0(A_observed, k_target, Y, lambda, gamma=gamma,
-                            step_size=step_size, max_iteration=20,
-                            residual_threshold=1e-4)
             trial_end_time = now()
             X_fitted = output[1] * output[2]'
             append!(experiment_results["update_times"], [output[7][3]])
@@ -216,10 +167,6 @@ for task_ID in task_ID_list
         elseif method_name == "SVD"
             trial_start = now()
             X_fitted = iterativeSVD(A_observed, k_target)
-            trial_end_time = now()
-        elseif method_name == "MF"
-            trial_start = now()
-            X_fitted = matrixFactorization(A_observed, k_target)
             trial_end_time = now()
         end
 
