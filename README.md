@@ -44,7 +44,7 @@ to the input data to the optimization problem.
 ## Citing lowRankMatrixLearning.jl
 
 If you use lowRankMatrixLearning.jl, we ask that you please cite the following
-[paper](https://arxiv.org/pdf/2306.04647.pdf):
+[paper](https://arxiv.org/abs/2407.13731):
 
 ```
 @article{bertsimas2024predictive,
