@@ -10,7 +10,7 @@ The software in this package is designed to provide high quality feasible
 solutions to the predictive low rank matrix learning problem under partial
 observations given by
 
-`min_{X, alpha} \sum_{(i, j) \in \Omega}(X_{ij}-A_{ij})^2 + \lambda * ||Y - X * \alpha||_2^2 + \frac{\gamma}||X||_\star`
+`min_{X, \alpha} \sum_{(i, j) \in \Omega}(X_{ij}-A_{ij})^2 + \lambda * ||Y - X * \alpha||_2^2 + \frac{\gamma}||X||_\star`
 
 `s.t. rank(X) <= k`
 
