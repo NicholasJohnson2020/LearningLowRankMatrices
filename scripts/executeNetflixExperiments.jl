@@ -102,6 +102,7 @@ for index in task_ID_list
         experiment_results["step_size"] = []
         experiment_results["Phi_residual"] = []
         experiment_results["Psi_residual"] = []
+        experiment_results["r2"] = []
     end
 
     start_time = now()
@@ -150,6 +151,16 @@ for index in task_ID_list
 
             Phi_residual = Z_fitted - P_fitted * Z_fitted
             Psi_residual = Z_fitted - U_fitted
+
+            RSS = norm(Y) ^ 2 - norm(P_fitted.L' * Y) ^ 2
+            mean_vec = mean(Y, dims=1)
+            TSS = 0
+            for i=1:size(Y)[1]
+                TSS += norm(Y[i, :] - mean_vec') ^ 2
+            end
+            r2 = 1 - (RSS / TSS)
+
+            append!(experiment_results["r2"], r2)
 
             append!(experiment_results["Phi_residual"], norm(Phi_residual)^2)
             append!(experiment_results["Psi_residual"], norm(Psi_residual)^2)
