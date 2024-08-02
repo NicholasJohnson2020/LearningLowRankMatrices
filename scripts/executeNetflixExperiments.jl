@@ -98,7 +98,7 @@ for index in task_ID_list
     experiment_results["execution_time"] = []
 
     if method_name in ["admm_sub", "admm_exact"]
-        experiment_results["update_times"] = []
+        #experiment_results["update_times"] = []
         experiment_results["step_size"] = []
         experiment_results["Phi_residual"] = []
         experiment_results["Psi_residual"] = []
@@ -165,7 +165,7 @@ for index in task_ID_list
             append!(experiment_results["Phi_residual"], norm(Phi_residual)^2)
             append!(experiment_results["Psi_residual"], norm(Psi_residual)^2)
 
-            append!(experiment_results["update_times"], [output[7][3]])
+            #append!(experiment_results["update_times"], [output[7][3]])
             append!(experiment_results["step_size"], step_size)
         elseif method_name == "admm_sub"
             step_size = 10
