@@ -47,7 +47,7 @@ function processData(input_path, method_name, version)
 
     successful_entries = 0
 
-    root_path = input_path * method_name * "/" * version * "/"
+    root_path = input_path * version * "/" * method_name * "/"
     file_paths = readdir(root_path, join=true)
 
     # Iterate over all files in the input directory
@@ -122,7 +122,7 @@ METHOD_NAME = ARGS[1]
 INPUT_PATH = ARGS[2]
 VERSION = ARGS[3]
 
-OUTPUT_ROOT = INPUT_PATH * METHOD_NAME * "/" * VERSION * "/" * METHOD_NAME
+OUTPUT_ROOT = INPUT_PATH * VERSION * "/" * METHOD_NAME * "/" * METHOD_NAME
 
 # Process and save the data
 df1 = processData(INPUT_PATH, METHOD_NAME, VERSION)
