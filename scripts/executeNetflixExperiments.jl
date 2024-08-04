@@ -85,6 +85,7 @@ for index in task_ID_list
     experiment_results["K"] = k_target
     experiment_results["D"] = d
     experiment_results["frac"] = missing_frac
+    experiment_results["Y"] = Y
 
     experiment_results["Trials"] = NUM_TRIALS
     experiment_results["train_size"] = []
@@ -96,6 +97,7 @@ for index in task_ID_list
     experiment_results["gamma"] = []
     experiment_results["lambda"] = []
     experiment_results["execution_time"] = []
+    experiment_results["predictions"] = []
 
     if method_name in ["admm_sub", "admm_exact"]
         #experiment_results["update_times"] = []
@@ -161,7 +163,7 @@ for index in task_ID_list
             r2 = 1 - (RSS / TSS)
 
             append!(experiment_results["r2"], r2)
-
+            append!(experiment_results["predictions"], [P_fitted * Y])
             append!(experiment_results["Phi_residual"], norm(Phi_residual)^2)
             append!(experiment_results["Psi_residual"], norm(Psi_residual)^2)
 
