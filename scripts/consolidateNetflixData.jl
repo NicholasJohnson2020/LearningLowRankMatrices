@@ -41,7 +41,7 @@ function processData(input_path, method_name, version)
                    feat5=Float64[], feat5_std=Float64[], feat6=Float64[],
                    feat6_std=Float64[])
 
-    if verison != "6Y"
+    if version != "6Y"
         select!(df, Not([:feat5, :feat5_std, :feat6, :feat6_std]))
     end
 
