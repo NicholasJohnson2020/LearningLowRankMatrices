@@ -126,7 +126,7 @@ OUTPUT_ROOT = INPUT_PATH * METHOD_NAME * "/" * METHOD_NAME
 
 # Load the syntehtic data
 synthetic_data = Dict()
-open(INPUT_PATH * "data.json", "r") do f
+open(INPUT_PATH * "SynExp_data.json", "r") do f
     global synthetic_data
     dicttxt = JSON.read(f, String)  # file information to string
     synthetic_data = JSON.parse(dicttxt)  # parse and transform data
@@ -135,7 +135,7 @@ end
 
 # Load the experiment parameters
 param_dict = Dict()
-open(INPUT_PATH * "params.json", "r") do f
+open(INPUT_PATH * "SynExp_params.json", "r") do f
     global param_dict
     dicttxt = JSON.read(f, String)  # file information to string
     param_dict = JSON.parse(dicttxt)  # parse and transform data
