@@ -93,6 +93,9 @@ function processData(input_path, method_name, version)
 
         Y = unserialize_matrix(exp_data["Y"])
         mean_vec = mean(Y, dims=1)
+        println(mean_vec)
+        println(Statistics.std(Y, dims = 1))
+        println()
         r2_errors = zeros(num_samples, size(Y)[2])
         for i=1:num_samples
             predictions = unserialize_matrix(exp_data["predictions"][1])
