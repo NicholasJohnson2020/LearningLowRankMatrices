@@ -92,7 +92,7 @@ function processData(input_path, method_name)
 
       r2_vals = []
       for i=1:num_samples
-         X = unserialize_matrix(exp_data['solution'][i])
+         X = unserialize_matrix(exp_data["solution"][i])
          Y = unserialize_matrix(experiment_data[string(i)]["Y"])
 
          beta = pinv(X'*X)*X'*Y
