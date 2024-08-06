@@ -1,6 +1,6 @@
 include("../lowRankMatrixLearning.jl")
 
-using Dates, JSON
+using Dates, JSON, Statistics
 
 function unserialize_matrix(mat)
     """
@@ -63,6 +63,12 @@ K = [3, 4, 5, 6, 7, 8, 9, 10]
 task_ID_list = collect((task_ID_input+1):num_tasks_input:length(K))
 
 Y = unserialize_matrix(netflix_data["Y"])
+mean_vec = Statistics.mean(Y, dims=1)
+std_vec = Statistics.std(Y, dims=1)
+for Y_index=1:size(Y)[2]
+    Y[:, Y_index] = (Y[:, Y_index] .- mean_vec[Y_index]) ./ std_vec[Y_index]
+end
+
 for index in task_ID_list
 
     global netflix_data
