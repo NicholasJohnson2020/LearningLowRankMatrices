@@ -95,7 +95,8 @@ function processData(input_path, method_name)
          X = unserialize_matrix(exp_data["solution"][i])
          Y = unserialize_matrix(experiment_data[string(i)]["Y"])
 
-         beta = pinv(X'*X)*X'*Y
+         #beta = pinv(X'*X)*X'*Y
+         beta = X \ Y
          preds = X * beta
          RSS = norm(Y - preds) ^ 2
          mean_vec = mean(Y, dims=1)
