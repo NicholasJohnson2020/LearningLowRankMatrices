@@ -34,7 +34,7 @@ using the following package versions:
 - PyCall v1.94.1
 - TSVD v0.4.3
 
-## Use of the admm()function
+## Use of the admm() function
 
 The key method in this package is admm(). This method accepts four required
 arguments: `A`, `k`, `Y`, `lambda`, as well as several optional arguments which
