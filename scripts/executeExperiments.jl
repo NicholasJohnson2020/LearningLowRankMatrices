@@ -98,8 +98,11 @@ for task_ID in task_ID_list
     experiment_results["execution_time"] = []
 
     if method_name in ["admm_sub", "admm_exact", "admmV0"]
-        experiment_results["update_times"] = []
+        #experiment_results["update_times"] = []
         experiment_results["step_size"] = []
+        experiment_results["Phi_residual"] = []
+        experiment_results["Psi_residual"] = []
+        experiment_results["Dual_residual"] = []
     end
 
     if method_name in ["ScaledGD", "VanillaGD"]
@@ -137,15 +140,32 @@ for task_ID in task_ID_list
             append!(experiment_results["iterations"], iterations)
             append!(experiment_results["step_size"], step_size)
         elseif method_name == "admm_exact"
-            step_size = 10
+            step_size = 2
             trial_start = now()
             output = admm(A_observed, k_target, Y, lambda, gamma=gamma,
-                          step_size=step_size, max_iteration=20,
-                          residual_threshold=1e-4, P_update="exact")
+                          step_size=step_size, max_iteration=500,
+                          residual_threshold=1e-8, P_update="exact")
             trial_end_time = now()
             X_fitted = output[1] * output[2]'
-            append!(experiment_results["update_times"], [output[7][3]])
+            U, V, P, Z, Phi, Psi = output
+            #append!(experiment_results["update_times"], [output[7][3]])
             append!(experiment_results["step_size"], step_size)
+
+            Phi_residual = Z - P * Z
+            Psi_residual = Z - U
+
+            factor_1 = [lambda * Y Phi / 2 Z / 2]
+            factor_2 = [Y Z Phi]
+            temp_mat = LowRankMat(factor_1, factor_2)
+            temp_L, _, _ = tsvd(Z, k_target)
+            P_1 = temp_L * temp_L'
+            temp_L, _, _ = tsvd(temp_mat, k_target)
+            P_2 = temp_L * temp_L'
+
+            append!(experiment_results["Phi_residual"], norm(Phi_residual)^2)
+            append!(experiment_results["Psi_residual"], norm(Psi_residual)^2)
+            append!(experiment_results["Dual_residual"], norm(P_2 - P_2 * P_1)^2)
+
         elseif method_name == "admm_sub"
             step_size = 10
             trial_start = now()
