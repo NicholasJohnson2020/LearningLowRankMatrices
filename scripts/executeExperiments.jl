@@ -29,7 +29,7 @@ task_ID_input = parse(Int64, ARGS[4])
 num_tasks_input = parse(Int64, ARGS[5])
 
 valid_methods = ["ScaledGD", "admm_exact", "admm_sub", "fastImpute",
-                 "softImpute", "SVD"]
+                 "fastImpute_side", "softImpute", "SVD"]
 
 @assert method_name in valid_methods
 
@@ -180,6 +180,11 @@ for task_ID in task_ID_list
             trial_start = now()
             X_fitted = fastImpute(A_observed, k_target)
             trial_end_time = now()
+        elseif method_name == "fastImpute_side"
+            trial_start = now()
+            X_fitted = fastImpute(A_observed', k_target, B=Y)
+            trial_end_time = now()
+            X_fitted = Y * X_fitted'
         elseif method_name == "softImpute"
             trial_start = now()
             X_fitted = softImpute(A_observed, k_target)

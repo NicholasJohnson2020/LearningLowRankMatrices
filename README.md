@@ -19,7 +19,7 @@ Rank Matrix Learning under Partial Observations: Mixed-Projection ADMM" by
 Dimitris Bertsimas and Nicholas A. G. Johnson. We provide a multithreaded
 implementation of the algorithm.
 
-## Installation and set up (TODO)
+## Installation and set up
 
 In order to run this software, you must install a recent version of Julia from
 http://julialang.org/downloads/. This code was developed using Julia 1.7.3.

@@ -27,7 +27,7 @@ data_type = ARGS[3]
 task_ID_input = parse(Int64, ARGS[4])
 num_tasks_input = parse(Int64, ARGS[5])
 
-valid_methods = ["admm_exact", "admm_sub", "fastImpute", "softImpute"]
+valid_methods = ["admm_exact", "admm_sub", "fastImpute", "fastImpute_side", "softImpute"]
 valid_types = ["4Y", "6Y"]
 
 @assert method_name in valid_methods
@@ -191,6 +191,10 @@ for index in task_ID_list
             trial_start = now()
             X_fitted = fastImpute(A_observed, k_target)
             trial_end_time = now()
+        elseif method_name == "fastImpute_side"
+            trial_start = now()
+            Factor_fitted = fastImpute(A_observed', k_target, B=Y)
+            trial_end_time = now()
         elseif method_name == "softImpute"
             trial_start = now()
             X_fitted = softImpute(A_observed, k_target)
@@ -217,6 +221,17 @@ for index in task_ID_list
             end
             Threads.@threads for i=1:n_out
                 fitted_val = U_fitted[test_i[i], :]' * V_fitted[test_j[i], :]
+                out_sample_error[i] = (test_val[i] - fitted_val) ^ 2
+                out_TSS[i] = test_val[i] ^ 2
+            end
+        elseif method_name == "fastImpute_side"
+            Threads.@threads for i=1:n_in
+                fitted_val = Y[train_i[i], :]' * Factor_fitted[train_j[i], :]
+                in_sample_error[i] = (train_val[i] - fitted_val) ^ 2
+                in_TSS[i] = train_val[i] ^ 2
+            end
+            Threads.@threads for i=1:n_out
+                fitted_val = Y[test_i[i], :]' * Factor_fitted[test_j[i], :]
                 out_sample_error[i] = (test_val[i] - fitted_val) ^ 2
                 out_TSS[i] = test_val[i] ^ 2
             end
